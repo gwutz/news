@@ -19,6 +19,6 @@
  */
 
 public static void main(string[] args) {
-    var app = new GnomeNews.Application () ;
-    app.run (args) ;
+    var app = new GnomeNews.Application ();
+    app.run (args);
 }

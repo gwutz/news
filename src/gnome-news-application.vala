@@ -20,35 +20,35 @@
 
 namespace GnomeNews{
     public class Application : Gtk.Application {
-        private Controller controller ;
-        private TrackerRss tracker_rss ;
-        private Tracker tracker ;
+        private Controller controller;
+        private TrackerRss tracker_rss;
+        private Tracker tracker;
 
         public Application () {
             Object (
                 application_id: "org.gnome.News",
                 flags : ApplicationFlags.FLAGS_NONE
-                ) ;
+                );
 
-            controller = new Controller () ;
+            controller = new Controller ();
             try {
                 tracker_rss = Bus.get_proxy_sync<TrackerRss>(BusType.SESSION, "org.freedesktop.Tracker1.Miner.RSS",
-                                                             "/org/freedesktop/Tracker1/Miner/RSS") ;
+                                                             "/org/freedesktop/Tracker1/Miner/RSS");
                 tracker = Bus.get_proxy_sync<Tracker>(BusType.SESSION, "org.freedesktop.Tracker1",
-                                                      "/org/freedesktop/Tracker1/Resources") ;
+                                                      "/org/freedesktop/Tracker1/Resources");
                 tracker.graph_updated.connect (() => {
-                    print ("Graph Updated\n") ;
-                }) ;
-                tracker_rss.Start () ;
+                    print ("Graph Updated\n");
+                });
+                tracker_rss.Start ();
             } catch ( IOError e ){
-                error (e.message) ;
+                error (e.message);
             }
         }
 
         public override void activate() {
-            var window = new GnomeNews.Window () ;
-            this.add_window (window) ;
-            window.show_all () ;
+            var window = new GnomeNews.Window ();
+            this.add_window (window);
+            window.show_all ();
         }
 
     }

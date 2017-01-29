@@ -410,7 +410,7 @@ sp_after_invariant_paren                 = ignore   # ignore/add/remove/force
 sp_special_semi                          = remove   # ignore/add/remove/force
 
 # Add or remove space before ';'. Default=Remove
-sp_before_semi                           = force   # ignore/add/remove/force
+sp_before_semi                           = remove   # ignore/add/remove/force
 
 # Add or remove space before ';' in non-empty 'for' statements
 sp_before_semi_for                       = force   # ignore/add/remove/force

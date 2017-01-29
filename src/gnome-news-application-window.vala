@@ -22,13 +22,13 @@ namespace GnomeNews{
     [GtkTemplate (ui = "/org/gnome/News/ui/window.ui")]
     public class Window : Gtk.ApplicationWindow {
         [GtkChild (name = "NewArticle")]
-        private Gtk.FlowBox new_article ;
+        private Gtk.FlowBox new_article;
 
         [GtkChild (name = "Stack")]
-        private Gtk.Stack stack ;
+        private Gtk.Stack stack;
 
         public Window () {
-            stack.notify["visible-child"].connect (view_changed) ;
+            stack.notify["visible-child"].connect (view_changed);
         }
 
         private void view_changed() {

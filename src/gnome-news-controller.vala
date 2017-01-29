@@ -18,16 +18,16 @@
  * along with gnome-news. If not, see <http://www.gnu.org/licenses/>.
  */
 
-using Tracker ;
+using Tracker;
 namespace GnomeNews{
     public class Controller : Object {
-        private Sparql.Connection sparql ;
+        private Sparql.Connection sparql;
 
         public Controller () {
             try {
-                sparql = Sparql.Connection.get () ;
+                sparql = Sparql.Connection.get ();
             } catch ( Error e ){
-                error (e.message) ;
+                error (e.message);
             }
         }
 

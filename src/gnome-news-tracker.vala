@@ -22,28 +22,28 @@ namespace GnomeNews{
 
     [DBus (name = "org.freedesktop.Tracker1.Miner")]
     public interface TrackerRss : Object {
-        public abstract void Start() throws IOError ;
+        public abstract void Start() throws IOError;
 
     }
 
     [DBus (name = "org.freedesktop.Tracker1.Resources")]
     public interface Tracker : Object {
         [DBus (name = "GraphUpdated")]
-        public signal void graph_updated(string classname, ResourcesDeleteStruct[] deletes, ResourcesInsertStruct[] inserts) ;
+        public signal void graph_updated(string classname, ResourcesDeleteStruct[] deletes, ResourcesInsertStruct[] inserts);
 
     }
 
     public struct ResourcesDeleteStruct {
-        public int attr1 ;
-        public int attr2 ;
-        public int attr3 ;
-        public int attr4 ;
+        public int attr1;
+        public int attr2;
+        public int attr3;
+        public int attr4;
     }
 
     public struct ResourcesInsertStruct {
-        public int attr1 ;
-        public int attr2 ;
-        public int attr3 ;
-        public int attr4 ;
+        public int attr1;
+        public int attr2;
+        public int attr3;
+        public int attr4;
     }
 }
