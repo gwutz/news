@@ -8,8 +8,8 @@ gnome_news_sources = [
     gnome_news_resources
 ]
 
-executable ('gnome-news', 
+executable ('gnome-news',
             gnome_news_sources,
-            dependencies: [glib, gobject, gio, gtk, sparql],
-            vala_args: ['--target-glib=2.38', '--gresources=' + meson.source_root() + '/data/gnome-news-resource.xml']  
-)
+            dependencies:[glib, gobject, gio, gtk, sparql],
+            vala_args:['--target-glib=2.38', '--gresources=' + meson.source_root () + '/data/gnome-news-resource.xml']
+            )
