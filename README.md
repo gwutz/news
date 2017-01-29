@@ -6,4 +6,6 @@ programming language for a project like that. So i try here to recreate gnome ne
 with all special features we recently got: Composite Widgets, Gresource files, DBus Integration,
 Tracker RSS Miner etc.
 
+![](data/screenshots/newsv2.png)
+
 Stay tuned!

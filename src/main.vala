@@ -17,8 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with gnome news. If not, see <http://www.gnu.org/licenses/>.
  */
-
-public static void main(string[] args) {
-    var app = new GnomeNews.Application ();
-    app.run (args);
+namespace GnomeNews {
+    public static void main(string[] args) {
+        //CACHE = Environment.get_user_cache_dir () + "/News/";
+        var app = new GnomeNews.Application ();
+        app.run (args);
+    }
 }
+

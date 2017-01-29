@@ -20,11 +20,13 @@
 
 namespace GnomeNews {
 
+
     public class Application : Gtk.Application {
+        public static string CACHE = Environment.get_user_cache_dir () + "/News/";
         private Controller controller;
         private TrackerRss tracker_rss;
         private Tracker tracker;
-
+        
         public Application () {
             Object (
                 application_id: "org.gnome.News",
@@ -49,6 +51,12 @@ namespace GnomeNews {
         public override void activate() {
             var window = new GnomeNews.Window ();
             this.add_window (window);
+            
+            var posts = controller.post_sorted_by_date();
+            foreach (Post p in posts) {
+                window.new_article.add (new Gtk.Image.from_file(p.thumbnail));
+            }
+            
             window.show_all ();
         }
 

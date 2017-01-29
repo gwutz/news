@@ -30,6 +30,28 @@ namespace GnomeNews {
                 error (e.message);
             }
         }
+        
+        public List<Post> post_sorted_by_date () {
+            string query = """
+                SELECT 
+                    nie:title(?msg) AS title
+                    nmo:htmlMessageContent(?msg) AS content
+                    nie:url(?msg) AS url
+                    nco:fullname(?creator) AS fullname
+                WHERE
+                {
+                    ?msg a mfo:FeedMessage
+                }
+                ORDER BY DESC (nie:contentCreated(?msg))
+            """;
+            var result = sparql.query (query);
+            var posts = new List<Post>();
+            while (result.next ()) {
+                posts.append(new Post(result));
+            }
+            
+            return posts;
+        }
 
     }
 }
