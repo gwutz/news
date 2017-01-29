@@ -19,17 +19,20 @@
  */
 
 using Tracker;
-namespace GnomeNews{
-    public class Controller : Object {
-        private Sparql.Connection sparql;
-
-        public Controller () {
-            try {
-                sparql = Sparql.Connection.get ();
-            } catch ( Error e ){
-                error (e.message);
-            }
+namespace GnomeNews
+{
+  public class Controller : Object
+  {
+     private Sparql.Connection sparql;
+     
+     public Controller ()
+     {
+       try {
+         sparql = Sparql.Connection.get();
+        } catch (Error e) {
+          error (e.message);
         }
+     }
 
-    }
+  }
 }

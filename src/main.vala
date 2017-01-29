@@ -18,7 +18,8 @@
  * along with gnome news. If not, see <http://www.gnu.org/licenses/>.
  */
 
-public static void main(string[] args) {
-    var app = new GnomeNews.Application ();
-    app.run (args);
+public static void main (string[] args)
+{
+  var app = new GnomeNews.Application ();
+  app.run (args);
 }
