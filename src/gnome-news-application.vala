@@ -18,7 +18,8 @@
  * along with gnome news. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace GnomeNews{
+namespace GnomeNews {
+
     public class Application : Gtk.Application {
         private Controller controller;
         private TrackerRss tracker_rss;

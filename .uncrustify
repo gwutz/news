@@ -608,7 +608,7 @@ sp_getset_brace                          = force   # ignore/add/remove/force
 sp_word_brace                             = ignore
 
 # Add or remove space between a variable and '{' for a namespace
-sp_word_brace_ns                          = remove
+sp_word_brace_ns                          = add
 
 # C++ 
 # Add or remove space before the '::' operator

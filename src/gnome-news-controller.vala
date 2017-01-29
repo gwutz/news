@@ -19,7 +19,7 @@
  */
 
 using Tracker;
-namespace GnomeNews{
+namespace GnomeNews {
     public class Controller : Object {
         private Sparql.Connection sparql;
 
