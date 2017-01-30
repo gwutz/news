@@ -22,9 +22,7 @@ namespace GnomeNews {
 
     public class ArticleView : WebKit.WebView {
         
-        public ArticleView (Post post) {
-            Object ();
-            
+        public void set_post (Post post) {
             var html = """
                 <style>
                     h1,

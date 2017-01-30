@@ -56,6 +56,7 @@ namespace GnomeNews {
         public PostImage (Post post) {
             Object (file: post.thumbnail);
             this.post = post;
+            this.show ();
         }
     }
 }

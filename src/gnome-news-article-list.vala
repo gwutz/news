@@ -21,6 +21,8 @@
 namespace GnomeNews {
     [GtkTemplate (ui = "/org/gnome/News/ui/articlerow.ui")]
     public class ArticleList : Gtk.Box {
+        public Post post { get; set; }
+        
         [GtkChild (name = "title")]
         private Gtk.Label title;
         
@@ -28,6 +30,7 @@ namespace GnomeNews {
         private Gtk.Label author;
         
         public ArticleList (Post p) {
+            this.post = p;
             this.title.set_text(p.title);
             this.author.set_text(p.author);
         }

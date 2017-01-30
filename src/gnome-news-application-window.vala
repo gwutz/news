@@ -23,10 +23,12 @@ namespace GnomeNews {
     [GtkTemplate (ui = "/org/gnome/News/ui/window.ui")]
     public class Window : Gtk.ApplicationWindow {
     
-        [GtkChild (name = "ArticleView")]
-        public Gtk.Viewport article_view;
         public Gtk.FlowBox new_article_flow;
         public Gtk.ListBox new_article_list;
+        private ArticleView article;
+    
+        [GtkChild (name = "ArticleView")]
+        public Gtk.Viewport article_view;
         
         private bool is_flow = true;
 
@@ -35,6 +37,16 @@ namespace GnomeNews {
 
         [GtkChild (name = "ViewMode")]
         private Gtk.Button view_mode;
+        
+        [GtkChild (name = "BackButton")]
+        private Gtk.Button back_btn;
+        
+        [GtkChild (name = "AddFeed")]
+        private Gtk.MenuButton add_feed_btn;
+        
+        [GtkChild (name = "StackSwitcher")]
+        private Gtk.StackSwitcher switcher;
+        
         
         private Gtk.Widget previous_view = null;
 
@@ -47,21 +59,56 @@ namespace GnomeNews {
             this.new_article_list = builder.get_object("NewArticleList") as Gtk.ListBox;
             view_mode.set_image (new Gtk.Image.from_icon_name ("view-list-symbolic", Gtk.IconSize.MENU));
             
-            this.new_article_flow.child_activated.connect (show_article);
-
+            this.new_article_flow.child_activated.connect (show_article_flow);
+            this.new_article_list.row_activated.connect (show_article_list);
+            
+            this.back_btn.clicked.connect (return_article);
         }
 
         /*private void view_changed() {
 
         }*/
         
-        private void show_article (Gtk.FlowBoxChild child) {
+        private void show_article_flow (Gtk.FlowBoxChild child) {
             Post post = ((PostImage)child.get_child()).post;
-            var articleview = new ArticleView (post);
-            articleview.show ();
+            show_article (post);
+        }
+        
+        private void show_article_list (Gtk.ListBoxRow row) {
+            Post post = ((ArticleList)row.get_child()).post;
+            show_article (post);
+        }
+        
+        private void show_article (Post post) {
+            
+            article = new ArticleView ();
+            article.set_post (post);
+            article.show ();
             this.previous_view = this.stack.get_visible_child ();
-            this.stack.add_named (articleview, "feedview");
-            this.stack.set_visible_child (articleview);
+            this.stack.add_named (article, "feedview");
+            this.stack.set_visible_child (article);
+            set_headerbar_article ();
+        }
+        
+        private void return_article (Gtk.Button btn) {
+            
+            this.stack.set_visible_child (this.previous_view);
+            this.previous_view = null;
+            this.stack.remove (this.article);
+            this.article = null;
+            set_headerbar_main ();
+        }
+        
+        private void set_headerbar_article () {
+            this.add_feed_btn.hide ();
+            this.switcher.hide ();
+            this.back_btn.show ();
+        }
+        
+        private void set_headerbar_main () {
+            this.add_feed_btn.show ();
+            this.switcher.show ();
+            this.back_btn.hide ();
         }
         
         [GtkCallback]

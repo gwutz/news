@@ -150,7 +150,7 @@
         <property name="can_focus">False</property>
         <property name="show_close_button">True</property>
         <child>
-          <object class="GtkMenuButton">
+          <object class="GtkMenuButton" id="AddFeed">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
@@ -165,8 +165,30 @@
             </child>
           </object>
         </child>
+        <child>
+          <object class="GtkButton" id="BackButton">
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="tooltip_text" translatable="yes">Back</property>
+            <property name="valign">center</property>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="icon_name">go-previous-symbolic</property>
+                <property name="icon_size">1</property>
+              </object>
+            </child>
+            <style>
+              <class name="image-button"/>
+            </style>
+          </object>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
         <child type="title">
-          <object class="GtkStackSwitcher">
+          <object class="GtkStackSwitcher" id="StackSwitcher">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="stack">Stack</property>

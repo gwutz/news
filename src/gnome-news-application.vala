@@ -80,8 +80,9 @@ namespace GnomeNews {
                 img.get_style_context ().add_class ("feedbox");
                 window.new_article_flow.add (img);
                 window.new_article_list.add (new ArticleList (p));
+                window.new_article_flow.show ();
             }
-            window.show_all ();
+            window.present ();
         }
 
     }
