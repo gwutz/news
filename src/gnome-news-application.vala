@@ -69,19 +69,18 @@ namespace GnomeNews {
             print ("Quit\n");
         }
 
-        public override void activate() {
+        protected override void activate () {
             setup_css_theming ();
-            var window = new GnomeNews.Window ();
+            var window = new GnomeNews.Window (this);
             this.add_window (window);
             
             var posts = controller.post_sorted_by_date();
             foreach (Post p in posts) {
-                var img = new Gtk.Image.from_file(p.thumbnail);
+                var img = new PostImage (p);
                 img.get_style_context ().add_class ("feedbox");
                 window.new_article_flow.add (img);
                 window.new_article_list.add (new ArticleList (p));
             }
-            
             window.show_all ();
         }
 

@@ -19,8 +19,10 @@
  */
 
 namespace GnomeNews {
+
     [GtkTemplate (ui = "/org/gnome/News/ui/window.ui")]
     public class Window : Gtk.ApplicationWindow {
+    
         [GtkChild (name = "ArticleView")]
         public Gtk.Viewport article_view;
         public Gtk.FlowBox new_article_flow;
@@ -33,18 +35,33 @@ namespace GnomeNews {
 
         [GtkChild (name = "ViewMode")]
         private Gtk.Button view_mode;
+        
+        private Gtk.Widget previous_view = null;
 
-        public Window () {
-            stack.notify["visible-child"].connect (view_changed);
+        public Window (Application app) {
+            Object (application: app);
+            //stack.notify["visible-child"].connect (view_changed);
             var builder = new Gtk.Builder.from_resource ("/org/gnome/News/ui/article.ui");
             this.new_article_flow = builder.get_object("NewArticleFlow") as Gtk.FlowBox;
             article_view.add (new_article_flow);
             this.new_article_list = builder.get_object("NewArticleList") as Gtk.ListBox;
             view_mode.set_image (new Gtk.Image.from_icon_name ("view-list-symbolic", Gtk.IconSize.MENU));
+            
+            this.new_article_flow.child_activated.connect (show_article);
+
         }
 
-        private void view_changed() {
+        /*private void view_changed() {
 
+        }*/
+        
+        private void show_article (Gtk.FlowBoxChild child) {
+            Post post = ((PostImage)child.get_child()).post;
+            var articleview = new ArticleView (post);
+            articleview.show ();
+            this.previous_view = this.stack.get_visible_child ();
+            this.stack.add_named (articleview, "feedview");
+            this.stack.set_visible_child (articleview);
         }
         
         [GtkCallback]

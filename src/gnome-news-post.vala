@@ -49,4 +49,13 @@ namespace GnomeNews {
             return Checksum.compute_for_string (ChecksumType.MD5, this.url);
         }
     }
+    
+    public class PostImage : Gtk.Image {
+        public Post post { get; set; }
+        
+        public PostImage (Post post) {
+            Object (file: post.thumbnail);
+            this.post = post;
+        }
+    }
 }

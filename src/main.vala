@@ -19,7 +19,6 @@
  */
 namespace GnomeNews {
     public static void main(string[] args) {
-        //CACHE = Environment.get_user_cache_dir () + "/News/";
         var app = new GnomeNews.Application ();
         app.run (args);
     }
