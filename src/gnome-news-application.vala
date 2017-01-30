@@ -20,18 +20,14 @@
 
 namespace GnomeNews {
 
-
     public class Application : Gtk.Application {
         public static string CACHE = Environment.get_user_cache_dir () + "/News/";
         private Controller controller;
         private TrackerRss tracker_rss;
         private Tracker tracker;
-        
+
         public Application () {
-            Object (
-                application_id: "org.gnome.News",
-                flags : ApplicationFlags.FLAGS_NONE
-                );
+            Object (application_id: "org.gnome.News");
 
             controller = new Controller ();
             
@@ -53,8 +49,24 @@ namespace GnomeNews {
             var screen = Gdk.Screen.get_default ();
             var cssprovider = new Gtk.CssProvider ();
             cssprovider.load_from_resource ("/org/gnome/News/theme/Adwaita.css");
-            var stylectx = new Gtk.StyleContext ();
-            stylectx.add_provider_for_screen (screen, cssprovider, Gtk.STYLE_PROVIDER_PRIORITY_USER);
+            Gtk.StyleContext.add_provider_for_screen (screen, cssprovider, Gtk.STYLE_PROVIDER_PRIORITY_USER);
+        }
+
+        protected override void startup () {            
+            base.startup ();
+            
+            var builder = new Gtk.Builder.from_resource ("/org/gnome/News/appmenu.ui");
+            var menu = (MenuModel) builder.get_object ("appmenu");
+            this.set_app_menu (menu);
+            print ("App Menu Items: %d\n", menu.get_n_items ());
+            
+            var quit_action = new SimpleAction ("app.quit", null);
+		    quit_action.activate.connect (quit_cb);
+		    this.add_action (quit_action);
+        }
+        
+        void quit_cb (SimpleAction action, Variant? param) {
+            print ("Quit\n");
         }
 
         public override void activate() {
