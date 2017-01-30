@@ -8,5 +8,6 @@ Tracker RSS Miner etc.
 
 ![](data/screenshots/news-flow.png)
 ![](data/screenshots/news-list.png)
+![](data/screenshots/news-article.png)
 
 Stay tuned!
