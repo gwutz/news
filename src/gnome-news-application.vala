@@ -54,7 +54,8 @@ namespace GnomeNews {
             
             var posts = controller.post_sorted_by_date();
             foreach (Post p in posts) {
-                window.new_article.add (new Gtk.Image.from_file(p.thumbnail));
+                window.new_article_flow.add (new Gtk.Image.from_file(p.thumbnail));
+                window.new_article_list.add (new ArticleList (p));
             }
             
             window.show_all ();

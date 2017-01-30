@@ -7,6 +7,7 @@ gnome_news_sources = [
     'gnome-news-controller.vala',
     'gnome-news-post.vala',
     'gnome-news-thumb.vala',
+    'gnome-news-article-list.vala',
     gnome_news_resources
 ]
 

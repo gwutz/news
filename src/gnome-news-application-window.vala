@@ -21,18 +21,44 @@
 namespace GnomeNews {
     [GtkTemplate (ui = "/org/gnome/News/ui/window.ui")]
     public class Window : Gtk.ApplicationWindow {
-        [GtkChild (name = "NewArticle")]
-        public Gtk.FlowBox new_article;
+        [GtkChild (name = "ArticleView")]
+        public Gtk.Viewport article_view;
+        public Gtk.FlowBox new_article_flow;
+        public Gtk.ListBox new_article_list;
+        
+        private bool is_flow = true;
 
         [GtkChild (name = "Stack")]
         private Gtk.Stack stack;
 
+        [GtkChild (name = "ViewMode")]
+        private Gtk.Button view_mode;
+
         public Window () {
             stack.notify["visible-child"].connect (view_changed);
+            var builder = new Gtk.Builder.from_resource ("/org/gnome/News/ui/article.ui");
+            this.new_article_flow = builder.get_object("NewArticleFlow") as Gtk.FlowBox;
+            article_view.add (new_article_flow);
+            this.new_article_list = builder.get_object("NewArticleList") as Gtk.ListBox;
+            view_mode.set_image (new Gtk.Image.from_icon_name ("view-list-symbolic", Gtk.IconSize.MENU));
         }
 
         private void view_changed() {
 
+        }
+        
+        [GtkCallback]
+        private void mode_switched () {
+            if (is_flow) {
+                view_mode.set_image (new Gtk.Image.from_icon_name ("view-grid-symbolic", Gtk.IconSize.MENU));
+                this.article_view.remove (new_article_flow);
+                this.article_view.add (new_article_list);
+            } else {
+                view_mode.set_image (new Gtk.Image.from_icon_name ("view-list-symbolic", Gtk.IconSize.MENU));
+                this.article_view.remove (new_article_list);
+                this.article_view.add (new_article_flow);
+            }
+            is_flow = !is_flow;
         }
 
     }

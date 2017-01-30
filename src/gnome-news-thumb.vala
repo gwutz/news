@@ -31,16 +31,18 @@ namespace GnomeNews {
         
         public void generate_thumbnail (Post p) {
             this.post = p;
+            var author = p.author != null ? p.author : "";
             this.webview.load_html("""
                 <div style="width: 250px">
                 <h3 style="margin-bottom: 2px">%s</h3>
                 <small style="color: #333">%s</small>
                 <small style="color: #9F9F9F">%s</small>
                 </div>
-            """.printf (p.title, p.author, p.content), null);
+            """.printf (p.title, author, p.content), null);
         }
         
         private void draw_thumbnail (WebKit.LoadEvent event) {
+            print ("thumb: %s\n", post.thumbnail);
             if (event == WebKit.LoadEvent.FINISHED) {
                 this.webview.get_snapshot.begin (WebKit.SnapshotRegion.FULL_DOCUMENT,
                                                  WebKit.SnapshotOptions.NONE,
@@ -52,8 +54,8 @@ namespace GnomeNews {
                         var ctx = new Cairo.Context(new_surface);
                         ctx.set_source_surface(surface, 0, 0);
                         ctx.paint ();
-                        new_surface.write_to_png (post.thumbnailcache);
-                        
+                        new_surface.write_to_png (post.thumbnail);
+                        post.thumbnailer = null;
                     } catch (Error e) {
                         error (e.message);
                     }

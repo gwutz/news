@@ -2,5 +2,7 @@
 <gresources>
   <gresource prefix="/org/gnome/News">
     <file compressed="true" preprocess="xml-stripblanks">ui/window.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/article.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/articlerow.ui</file>
   </gresource>
 </gresources>

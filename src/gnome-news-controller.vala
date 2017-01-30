@@ -41,6 +41,9 @@ namespace GnomeNews {
                 WHERE
                 {
                     ?msg a mfo:FeedMessage
+                    OPTIONAL {
+                        ?msg nco:creator ?creator
+                    }
                 }
                 ORDER BY DESC (nie:contentCreated(?msg))
             """;

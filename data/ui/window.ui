@@ -58,14 +58,11 @@
             <property name="can_focus">True</property>
             <property name="shadow_type">in</property>
             <child>
-              <object class="GtkViewport">
+              <object class="GtkViewport" id="ArticleView">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkFlowBox" id="NewArticle">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                  </object>
+                  <placeholder/>
                 </child>
               </object>
             </child>
@@ -156,6 +153,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="icon_name">system-search-symbolic</property>
+                <property name="icon_size">1</property>
               </object>
             </child>
           </object>
@@ -165,21 +163,18 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton">
+          <object class="GtkButton" id="ViewMode">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
+            <signal name="clicked" handler="mode_switched" swapped="no"/>
             <child>
-              <object class="GtkImage">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="icon_name">view-list-symbolic</property>
-              </object>
+              <placeholder/>
             </child>
           </object>
           <packing>
             <property name="pack_type">end</property>
-            <property name="position">1</property>
+            <property name="position">2</property>
           </packing>
         </child>
       </object>

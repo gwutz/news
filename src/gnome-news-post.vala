@@ -21,7 +21,7 @@
 using Tracker;
 namespace GnomeNews {
     public class Post : Object {
-        private Thumb thumbnailer = new Thumb ();
+        public Thumb thumbnailer = new Thumb ();
     
         public string title { get; set; }
         public string content { get; set; }
@@ -29,17 +29,17 @@ namespace GnomeNews {
         public string author { get; set; }
         public string thumbnail { get; set; }
         
-        public string thumbnailcache;
-        
         public Post (Sparql.Cursor cursor) {
             this.title = cursor.get_string(0);
             this.content = cursor.get_string(1);
             this.url = cursor.get_string(2);
+            this.author = cursor.get_string(3);
             
             this.thumbnail = Application.CACHE + compute_hash () + ".png";
             if (!FileUtils.test (this.thumbnail, FileTest.EXISTS)) {
                 Idle.add (() => {
                     thumbnailer.generate_thumbnail (this);
+                    //thumbnailer = null;
                     return false;
                 });
             }
