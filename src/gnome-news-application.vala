@@ -34,6 +34,7 @@ namespace GnomeNews {
                 );
 
             controller = new Controller ();
+            
             try {
                 tracker_rss = Bus.get_proxy_sync<TrackerRss>(BusType.SESSION, "org.freedesktop.Tracker1.Miner.RSS",
                                                              "/org/freedesktop/Tracker1/Miner/RSS");
@@ -47,14 +48,25 @@ namespace GnomeNews {
                 error (e.message);
             }
         }
+        
+        private void setup_css_theming () {
+            var screen = Gdk.Screen.get_default ();
+            var cssprovider = new Gtk.CssProvider ();
+            cssprovider.load_from_resource ("/org/gnome/News/theme/Adwaita.css");
+            var stylectx = new Gtk.StyleContext ();
+            stylectx.add_provider_for_screen (screen, cssprovider, Gtk.STYLE_PROVIDER_PRIORITY_USER);
+        }
 
         public override void activate() {
+            setup_css_theming ();
             var window = new GnomeNews.Window ();
             this.add_window (window);
             
             var posts = controller.post_sorted_by_date();
             foreach (Post p in posts) {
-                window.new_article_flow.add (new Gtk.Image.from_file(p.thumbnail));
+                var img = new Gtk.Image.from_file(p.thumbnail);
+                img.get_style_context ().add_class ("feedbox");
+                window.new_article_flow.add (img);
                 window.new_article_list.add (new ArticleList (p));
             }
             
