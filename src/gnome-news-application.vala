@@ -82,7 +82,7 @@ namespace GnomeNews {
                 window.new_article_list.add (new ArticleList (p));
                 window.new_article_flow.show ();
             }
-            window.present ();
+            window.show ();
         }
 
     }

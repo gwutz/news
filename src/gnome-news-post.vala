@@ -39,7 +39,6 @@ namespace GnomeNews {
             if (!FileUtils.test (this.thumbnail, FileTest.EXISTS)) {
                 Idle.add (() => {
                     thumbnailer.generate_thumbnail (this);
-                    //thumbnailer = null;
                     return false;
                 });
             }
