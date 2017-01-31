@@ -13,4 +13,6 @@
     background-color: @sidebar_bg_color;
 }
 
-
+.postspinner {
+    background-color: #ffffff;
+}

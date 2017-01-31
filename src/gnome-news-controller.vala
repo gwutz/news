@@ -55,6 +55,18 @@ namespace GnomeNews {
             
             return posts;
         }
+        
+        public void add_channel (string url, int update_interval = 5) {
+            string query = """
+                INSERT {
+                  _:FeedSettings a mfo:FeedSettings ;
+                                   mfo:updateInterval %i .
+                  _:Feed a nie:DataObject, mfo:FeedChannel ;
+                           mfo:feedSettings _:FeedSettings ;
+                           nie:url "%s" }
+            """.printf (update_interval, url);
+            sparql.update (query);
+        }
 
     }
 }

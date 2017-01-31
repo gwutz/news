@@ -22,7 +22,7 @@ namespace GnomeNews {
 
     public class Application : Gtk.Application {
         public static string CACHE = Environment.get_user_cache_dir () + "/News/";
-        private Controller controller;
+        public Controller controller;
         private TrackerRss tracker_rss;
         private Tracker tracker;
 
@@ -77,7 +77,6 @@ namespace GnomeNews {
             var posts = controller.post_sorted_by_date();
             foreach (Post p in posts) {
                 var img = new PostImage (p);
-                img.get_style_context ().add_class ("feedbox");
                 window.new_article_flow.add (img);
                 window.new_article_list.add (new ArticleList (p));
                 window.new_article_flow.show ();

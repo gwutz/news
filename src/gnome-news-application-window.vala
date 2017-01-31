@@ -47,6 +47,12 @@ namespace GnomeNews {
         [GtkChild (name = "StackSwitcher")]
         private Gtk.StackSwitcher switcher;
         
+        [GtkChild (name = "NewUrl")]
+        private Gtk.Entry new_url;
+        
+        [GtkChild (name = "NewUrlButton")]
+        private Gtk.Button new_url_btn;
+        
         
         private Gtk.Widget previous_view = null;
 
@@ -124,6 +130,23 @@ namespace GnomeNews {
             }
             is_flow = !is_flow;
         }
+        
+        [GtkCallback]
+        private void add_new_url (Gtk.Button button) {
+                var app = get_application () as GnomeNews.Application;
+                if (app != null) {
+                    app.controller.add_channel (new_url.get_text ());
+                }
+        }
 
+        [GtkCallback]
+        private void on_url_changed (Gtk.Editable entry) {
+            var url = new_url.get_text ();
+            if (url.length == 0) {
+                new_url_btn.set_sensitive (false);
+            } else {
+                new_url_btn.set_sensitive (true);
+            }
+        }
     }
 }

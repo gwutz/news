@@ -23,11 +23,14 @@ namespace GnomeNews {
     public class Post : Object {
         public Thumb thumbnailer = new Thumb ();
     
+        public signal void thumb_ready ();
+    
         public string title { get; set; }
         public string content { get; set; }
         public string url { get; set; }
         public string author { get; set; }
         public string thumbnail { get; set; }
+        public bool thumb_exists = false;
         
         public Post (Sparql.Cursor cursor) {
             this.title = cursor.get_string(0);
@@ -41,6 +44,8 @@ namespace GnomeNews {
                     thumbnailer.generate_thumbnail (this);
                     return false;
                 });
+            } else {
+                thumb_exists = true;
             }
         }
     
@@ -49,13 +54,33 @@ namespace GnomeNews {
         }
     }
     
-    public class PostImage : Gtk.Image {
+    public class PostImage : Gtk.Overlay {
         public Post post { get; set; }
+        private Gtk.Image img;
         
         public PostImage (Post post) {
-            Object (file: post.thumbnail);
+            Object ();
+            this.height_request = 256;
+            this.width_request = 256;
+            
+            img = new Gtk.Image.from_file (post.thumbnail);
+            img.get_style_context ().add_class ("feedbox");
+            this.add (img);
+            if (!post.thumb_exists) {
+                var spinner = new Gtk.Spinner ();
+                spinner.start ();
+                spinner.get_style_context ().add_class ("postspinner");
+                post.thumb_ready.connect (() => {
+                    spinner.stop ();
+                    this.remove (spinner);
+                    img.set_from_file (post.thumbnail);
+                    this.show_all ();
+                });
+                this.add_overlay (spinner);
+            }
+            
             this.post = post;
-            this.show ();
+            this.show_all ();
         }
     }
 }

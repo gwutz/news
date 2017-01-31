@@ -42,8 +42,8 @@ namespace GnomeNews {
         }
         
         private void draw_thumbnail (WebKit.LoadEvent event) {
-            print ("thumb: %s\n", post.thumbnail);
             if (event == WebKit.LoadEvent.FINISHED) {
+                print ("thumb: %s\n", post.thumbnail);
                 this.webview.get_snapshot.begin (WebKit.SnapshotRegion.FULL_DOCUMENT,
                                                  WebKit.SnapshotOptions.NONE,
                                                  null, 
@@ -55,6 +55,7 @@ namespace GnomeNews {
                         ctx.set_source_surface(surface, 0, 0);
                         ctx.paint ();
                         new_surface.write_to_png (post.thumbnail);
+                        post.thumb_ready ();
                         post.thumbnailer = null;
                     } catch (Error e) {
                         error (e.message);
