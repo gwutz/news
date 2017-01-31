@@ -36,8 +36,11 @@ namespace GnomeNews {
                                                              "/org/freedesktop/Tracker1/Miner/RSS");
                 tracker = Bus.get_proxy_sync<Tracker>(BusType.SESSION, "org.freedesktop.Tracker1",
                                                       "/org/freedesktop/Tracker1/Resources");
-                tracker.graph_updated.connect (() => {
-                    print ("Graph Updated\n");
+                tracker.graph_updated.connect ((classname, deleted, inserted) => {
+                    // http://www.tracker-project.org/temp/mfo#FeedMessage
+                    print ("Graph Updated: %s\n", classname);
+                    //controller.items_updated ();
+                    //controller.feeds_updated ();
                 });
                 tracker_rss.Start ();
             } catch ( IOError e ){
@@ -74,11 +77,11 @@ namespace GnomeNews {
             var window = new GnomeNews.Window (this);
             this.add_window (window);
             
-            var posts = controller.post_sorted_by_date();
+            var posts = controller.post_sorted_by_date(true);
             foreach (Post p in posts) {
                 var img = new PostImage (p);
                 window.new_article_flow.add (img);
-                window.new_article_list.add (new ArticleList (p));
+                //window.new_article_list.add (new ArticleList (p));
                 window.new_article_flow.show ();
             }
             window.show ();

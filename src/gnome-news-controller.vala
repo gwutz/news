@@ -21,6 +21,16 @@
 using Tracker;
 namespace GnomeNews {
     public class Controller : Object {
+    
+        public enum Updated {
+            MARK_AS_READ
+        }
+    
+        public signal void items_updated ();
+        public signal void feeds_updated ();
+        
+        public signal void item_updated (Post post, Updated updated);
+    
         private Sparql.Connection sparql;
 
         public Controller () {
@@ -31,8 +41,9 @@ namespace GnomeNews {
             }
         }
         
-        public List<Post> post_sorted_by_date () {
-            string query = """
+        public List<Post> post_sorted_by_date (bool unread = false) {
+            debug ("Start Querying DB");
+            StringBuilder builder = new StringBuilder ("
                 SELECT 
                     nie:title(?msg) AS title
                     nmo:htmlMessageContent(?msg) AS content
@@ -40,14 +51,29 @@ namespace GnomeNews {
                     nco:fullname(?creator) AS fullname
                 WHERE
                 {
-                    ?msg a mfo:FeedMessage
-                    OPTIONAL {
+                    ?msg a mfo:FeedMessage");
+            /*string query = """
+                SELECT 
+                    nie:title(?msg) AS title
+                    nmo:htmlMessageContent(?msg) AS content
+                    nie:url(?msg) AS url
+                    nco:fullname(?creator) AS fullname
+                WHERE
+                {
+                    ?msg a mfo:FeedMessage""";*/
+            
+            if (unread) {
+                builder.append ("; nmo:isRead false");
+            }
+            
+            builder.append (". OPTIONAL {
                         ?msg nco:creator ?creator
                     }
                 }
-                ORDER BY DESC (nie:contentCreated(?msg))
-            """;
-            var result = sparql.query (query);
+                ORDER BY DESC (nie:contentCreated(?msg))");
+                    
+            var result = sparql.query (builder.str);
+            debug ("Querying Done");
             var posts = new List<Post>();
             while (result.next ()) {
                 posts.append(new Post(result));
@@ -66,6 +92,23 @@ namespace GnomeNews {
                            nie:url "%s" }
             """.printf (update_interval, url);
             sparql.update (query);
+        }
+        
+        public void mark_post_as_read (Post post) {
+            debug ("Url read: %s", post.url);
+            string query = """
+                DELETE
+                  { ?msg nmo:isRead ?any }
+                WHERE
+                  { ?msg nie:url "%s";
+                         nmo:isRead ?any }
+                INSERT
+                  { ?msg nmo:isRead true }
+                WHERE
+                  { ?msg nie:url "%s" }
+            """.printf(post.url, post.url);
+            sparql.update (query);
+            item_updated (post, Updated.MARK_AS_READ);
         }
 
     }

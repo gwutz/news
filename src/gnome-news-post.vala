@@ -21,7 +21,7 @@
 using Tracker;
 namespace GnomeNews {
     public class Post : Object {
-        public Thumb thumbnailer = new Thumb ();
+        //public Thumb thumbnailer = new Thumb ();
     
         public signal void thumb_ready ();
     
@@ -41,7 +41,7 @@ namespace GnomeNews {
             this.thumbnail = Application.CACHE + compute_hash () + ".png";
             if (!FileUtils.test (this.thumbnail, FileTest.EXISTS)) {
                 Idle.add (() => {
-                    thumbnailer.generate_thumbnail (this);
+                    generate_thumbnail ();
                     return false;
                 });
             } else {
@@ -51,6 +51,46 @@ namespace GnomeNews {
     
         private string compute_hash () {
             return Checksum.compute_for_string (ChecksumType.MD5, this.url);
+        }
+        
+        // Thumbnail shit
+        private WebKit.WebView webview;
+        
+        public void generate_thumbnail () {
+            this.webview = new WebKit.WebView ();
+            this.webview.sensitive = false;
+            this.webview.load_changed.connect (draw_thumbnail);
+            var author = this.author != null ? this.author : "";
+            this.webview.load_html("""
+                <div style="width: 250px">
+                <h3 style="margin-bottom: 2px">%s</h3>
+                <small style="color: #333">%s</small>
+                <small style="color: #9F9F9F">%s</small>
+                </div>
+            """.printf (title, author, content), null);
+        }
+        
+        private void draw_thumbnail (WebKit.LoadEvent event) {
+            if (event == WebKit.LoadEvent.FINISHED) {
+                print ("thumb: %s\n", thumbnail);
+                this.webview.get_snapshot.begin (WebKit.SnapshotRegion.FULL_DOCUMENT,
+                                                 WebKit.SnapshotOptions.NONE,
+                                                 null, 
+                                                 (obj, res) => {
+                    try {
+                        var surface = this.webview.get_snapshot.end(res);
+                        var new_surface = new Cairo.ImageSurface (Cairo.Format.ARGB32, 256, 256);
+                        var ctx = new Cairo.Context(new_surface);
+                        ctx.set_source_surface(surface, 0, 0);
+                        ctx.paint ();
+                        new_surface.write_to_png (thumbnail);
+                        thumb_ready ();
+                    } catch (Error e) {
+                        error (e.message);
+                    }
+                    
+                });
+            }
         }
     }
     

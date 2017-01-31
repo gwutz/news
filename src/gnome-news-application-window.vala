@@ -69,6 +69,11 @@ namespace GnomeNews {
             this.new_article_list.row_activated.connect (show_article_list);
             
             this.back_btn.clicked.connect (return_article);
+            
+            //app.controller.items_updated.connect (items_updated);
+            app.controller.feeds_updated.connect (feeds_updated);
+            
+            app.controller.item_updated.connect (item_updated);
         }
 
         /*private void view_changed() {
@@ -94,6 +99,8 @@ namespace GnomeNews {
             this.stack.add_named (article, "feedview");
             this.stack.set_visible_child (article);
             set_headerbar_article ();
+            var app = get_application () as GnomeNews.Application;
+            app.controller.mark_post_as_read (post);
         }
         
         private void return_article (Gtk.Button btn) {
@@ -117,26 +124,65 @@ namespace GnomeNews {
             this.back_btn.hide ();
         }
         
+        private void item_updated (Post post, Controller.Updated updated) {
+            if (updated == Controller.Updated.MARK_AS_READ) {
+                var children = this.new_article_flow.get_children ();
+                foreach (Gtk.Widget w in children) {
+                    var flowboxchild = w as Gtk.FlowBoxChild;
+                    var item = flowboxchild.get_child () as PostImage;
+                    if (item != null && item.post == post) {
+                        debug ("Found Post - destroy it: %s", post.url);
+                        flowboxchild.destroy ();
+                        break;
+                    }
+                }
+            }
+            
+        }
+        
+        private void feeds_updated () {
+        
+        }
+        
         [GtkCallback]
         private void mode_switched () {
+            var app = get_application () as GnomeNews.Application;
+            
+            // remove widgets from current view
+            List<weak Gtk.Widget> children = null;
+            if (is_flow) {
+                children = new_article_flow.get_children ();
+            } else {
+                children = new_article_list.get_children ();
+            }
+            foreach (Gtk.Widget w in children)
+                w.destroy ();
+            
+            // populate with new widgets
+            var posts = app.controller.post_sorted_by_date(true);
             if (is_flow) {
                 view_mode.set_image (new Gtk.Image.from_icon_name ("view-grid-symbolic", Gtk.IconSize.MENU));
                 this.article_view.remove (new_article_flow);
                 this.article_view.add (new_article_list);
+
+                foreach (Post p in posts)
+                    new_article_list.add (new ArticleList (p));
             } else {
                 view_mode.set_image (new Gtk.Image.from_icon_name ("view-list-symbolic", Gtk.IconSize.MENU));
                 this.article_view.remove (new_article_list);
                 this.article_view.add (new_article_flow);
+                
+                foreach (Post p in posts)
+                    new_article_flow.add (new PostImage (p));
             }
+
             is_flow = !is_flow;
         }
         
         [GtkCallback]
         private void add_new_url (Gtk.Button button) {
                 var app = get_application () as GnomeNews.Application;
-                if (app != null) {
-                    app.controller.add_channel (new_url.get_text ());
-                }
+                app.controller.add_channel (new_url.get_text ());
         }
 
         [GtkCallback]
