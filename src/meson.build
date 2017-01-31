@@ -14,5 +14,6 @@ gnome_news_sources = [
 executable ('gnome-news',
             gnome_news_sources,
             dependencies: [glib, gobject, gio, gtk, sparql, webkit],
-            vala_args:['--target-glib=2.38', '--gresources=' + meson.source_root () + '/data/gnome-news-resource.xml']
+            vala_args:['--target-glib=2.38', '--gresources=' + meson.source_root () + '/data/gnome-news-resource.xml'],
+            install: true
             )
