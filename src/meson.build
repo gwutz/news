@@ -9,7 +9,10 @@ gnome_news_sources = [
     'gnome-news-article-list.vala',
     'gnome-news-article-box.vala',
     'gnome-news-article-view.vala',
+    'worker/gnome-news-company.vala',
+    'worker/gnome-news-worker.vala',
     'gnome-news-widget-factory.vala',
+    'worker/gnome-news-image-loader.vala',
     gnome_news_resources
 ]
 

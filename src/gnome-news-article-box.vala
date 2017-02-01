@@ -22,7 +22,7 @@ namespace GnomeNews {
 
     public class ArticleBox : Gtk.Overlay {
         public Post post { get; set; }
-        private Gtk.Image img;
+        public Gtk.Image img;
         private Gtk.Spinner spinner;
         
         public ArticleBox (Post post) {
@@ -48,7 +48,8 @@ namespace GnomeNews {
                 post.thumb_ready.connect (show_image);
                 add_overlay (spinner);
             } else {
-                img.set_from_file (post.thumbnail);
+                Lumber.Company.get_instance ().enqueue (new ImageLoader(this));
+                //img.set_from_file (post.thumbnail);
             }
             this.post = post;
         }

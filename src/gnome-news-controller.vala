@@ -69,7 +69,8 @@ namespace GnomeNews {
             }
             
             builder.append (". OPTIONAL {
-                        ?msg nco:creator ?creator
+                        ?msg nco:creator ?creator .
+                        ?msg nao:hasTag ?tag
                     }
                 }
                 ORDER BY DESC (nie:contentCreated(?msg))");

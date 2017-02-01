@@ -40,7 +40,7 @@ namespace GnomeNews {
             this.url = cursor.get_string (2);
             this.author = cursor.get_string (3);
             this.read = cursor.get_boolean (4);
-            this.starred = cursor.get_boolean (5);
+            //this.starred = cursor.get_boolean (5);
             
             this.thumbnail = Application.CACHE + compute_hash () + ".png";
             if (!FileUtils.test (this.thumbnail, FileTest.EXISTS)) {
