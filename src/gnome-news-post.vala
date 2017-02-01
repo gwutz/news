@@ -31,13 +31,16 @@ namespace GnomeNews {
         public string author { get; set; }
         public string thumbnail { get; set; }
         public bool starred { get; set; }
+        public bool read { get; set; }
         public bool thumb_exists = false;
         
         public Post (Sparql.Cursor cursor) {
-            this.title = cursor.get_string(0);
-            this.content = cursor.get_string(1);
-            this.url = cursor.get_string(2);
-            this.author = cursor.get_string(3);
+            this.title = cursor.get_string (0);
+            this.content = cursor.get_string (1);
+            this.url = cursor.get_string (2);
+            this.author = cursor.get_string (3);
+            this.read = cursor.get_boolean (4);
+            this.starred = cursor.get_boolean (5);
             
             this.thumbnail = Application.CACHE + compute_hash () + ".png";
             if (!FileUtils.test (this.thumbnail, FileTest.EXISTS)) {

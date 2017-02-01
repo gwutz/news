@@ -59,6 +59,8 @@ namespace GnomeNews {
         [GtkChild (name = "NewUrlButton")]
         private Gtk.Button new_url_btn;
         
+        [GtkChild (name = "SearchBar")]
+        private Gtk.SearchBar search_bar;
         
         private Gtk.Widget previous_view = null;
 
@@ -232,6 +234,15 @@ namespace GnomeNews {
         private void add_new_url (Gtk.Button button) {
                 var app = get_application () as GnomeNews.Application;
                 app.controller.add_channel (new_url.get_text ());
+        }
+        
+        [GtkCallback]
+        private void search_btn_toggled () {
+            if (search_bar.search_mode_enabled) {
+                search_bar.set_search_mode (false);
+            } else {
+                search_bar.set_search_mode (true);
+            }
         }
 
         [GtkCallback]

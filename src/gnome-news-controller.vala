@@ -49,6 +49,8 @@ namespace GnomeNews {
                     nmo:htmlMessageContent(?msg) AS content
                     nie:url(?msg) AS url
                     nco:fullname(?creator) AS fullname
+                    nmo:isRead(?msg) AS is_read
+                    ?msg BOUND(?tag) as is_starred
                 WHERE
                 {
                     ?msg a mfo:FeedMessage");
