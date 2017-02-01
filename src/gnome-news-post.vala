@@ -30,6 +30,7 @@ namespace GnomeNews {
         public string url { get; set; }
         public string author { get; set; }
         public string thumbnail { get; set; }
+        public bool starred { get; set; }
         public bool thumb_exists = false;
         
         public Post (Sparql.Cursor cursor) {

@@ -237,6 +237,7 @@
           <object class="GtkButton" id="StarButton">
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
+            <signal name="clicked" handler="star_article" swapped="no"/>
             <child>
               <object class="GtkImage">
                 <property name="visible">True</property>

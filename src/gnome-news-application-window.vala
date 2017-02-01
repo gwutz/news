@@ -99,13 +99,13 @@ namespace GnomeNews {
         private void show_article (Post post) {
             
             article = new ArticleView ();
-            article.set_post (post);
+            article.post =  post;
             article.show_all ();
             this.previous_view = this.stack.get_visible_child ();
             this.stack.add_named (article, "feedview");
             this.stack.set_visible_child (article);
             this.stack.show_all ();
-            set_headerbar_article ();
+            set_headerbar_article (post);
             var app = get_application () as GnomeNews.Application;
             app.controller.mark_post_as_read (post);
         }
@@ -119,13 +119,19 @@ namespace GnomeNews {
             set_headerbar_main ();
         }
         
-        private void set_headerbar_article () {
+        private void set_headerbar_article (Post post) {
             this.add_feed_btn.hide ();
             this.switcher.hide ();
             this.search_btn.hide ();
             this.view_mode.hide ();
             this.star_btn.show ();
             this.back_btn.show ();
+            
+            if (post.starred) {
+                this.star_btn.set_image (new Gtk.Image.from_icon_name ("starred-symbolic", Gtk.IconSize.MENU));
+            } else {
+                this.star_btn.set_image (new Gtk.Image.from_icon_name ("non-starred-symbolic", Gtk.IconSize.MENU));
+            }
         }
         
         private void set_headerbar_main () {
@@ -156,6 +162,26 @@ namespace GnomeNews {
         
         private void feeds_updated () {
         
+        }
+        
+        [GtkCallback]
+        private void star_article (Gtk.Button btn) {
+            print ("star article");
+            if (article == null) {
+                debug ("ArticleView destroyed - this shouldn't happen");
+                return;
+            }
+            
+            var app = get_application () as GnomeNews.Application;
+            if (article.post.starred) {
+                app.controller.mark_post_as_starred (article.post, false);
+                article.post.starred = false;
+                this.star_btn.set_image (new Gtk.Image.from_icon_name ("non-starred-symbolic", Gtk.IconSize.MENU));
+            } else {
+                app.controller.mark_post_as_starred (article.post, true);
+                article.post.starred = true;
+                this.star_btn.set_image (new Gtk.Image.from_icon_name ("starred-symbolic", Gtk.IconSize.MENU));
+            }
         }
         
         [GtkCallback]

@@ -110,6 +110,27 @@ namespace GnomeNews {
             sparql.update (query);
             item_updated (post, Updated.MARK_AS_READ);
         }
+        
+        public void mark_post_as_starred (Post post, bool starred) {
+            string query;
+            if (starred) {
+                query = """
+                    INSERT
+                      { ?msg nao:hasTag nao:predefined-tag-favorite }
+                    WHERE
+                      { ?msg nie:url "%s" }
+                    """.printf (post.url);
+            } else {
+                query = """
+                    DELETE
+                      { ?msg nao:hasTag nao:predefined-tag-favorite }
+                    WHERE
+                      { ?msg nie:url "%s";
+                             nao:hasTag nao:predefined-tag-favorite }
+                    """.printf (post.url);
+            }
+            sparql.update (query);
+        }
 
     }
 }
