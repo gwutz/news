@@ -41,6 +41,12 @@ namespace GnomeNews {
         [GtkChild (name = "BackButton")]
         private Gtk.Button back_btn;
         
+        [GtkChild (name = "StarButton")]
+        private Gtk.Button star_btn;
+        
+        [GtkChild (name = "SearchButton")]
+        private Gtk.ToggleButton search_btn;
+        
         [GtkChild (name = "AddFeed")]
         private Gtk.MenuButton add_feed_btn;
         
@@ -81,7 +87,7 @@ namespace GnomeNews {
         }*/
         
         private void show_article_flow (Gtk.FlowBoxChild child) {
-            Post post = ((PostImage)child.get_child()).post;
+            Post post = ((ArticleBox)child.get_child()).post;
             show_article (post);
         }
         
@@ -94,10 +100,11 @@ namespace GnomeNews {
             
             article = new ArticleView ();
             article.set_post (post);
-            article.show ();
+            article.show_all ();
             this.previous_view = this.stack.get_visible_child ();
             this.stack.add_named (article, "feedview");
             this.stack.set_visible_child (article);
+            this.stack.show_all ();
             set_headerbar_article ();
             var app = get_application () as GnomeNews.Application;
             app.controller.mark_post_as_read (post);
@@ -115,24 +122,31 @@ namespace GnomeNews {
         private void set_headerbar_article () {
             this.add_feed_btn.hide ();
             this.switcher.hide ();
+            this.search_btn.hide ();
+            this.view_mode.hide ();
+            this.star_btn.show ();
             this.back_btn.show ();
         }
         
         private void set_headerbar_main () {
             this.add_feed_btn.show ();
             this.switcher.show ();
+            this.search_btn.show ();
+            this.view_mode.show ();
             this.back_btn.hide ();
+            this.star_btn.hide ();
         }
         
         private void item_updated (Post post, Controller.Updated updated) {
+            var app = get_application () as GnomeNews.Application;
             if (updated == Controller.Updated.MARK_AS_READ) {
                 var children = this.new_article_flow.get_children ();
                 foreach (Gtk.Widget w in children) {
                     var flowboxchild = w as Gtk.FlowBoxChild;
-                    var item = flowboxchild.get_child () as PostImage;
+                    var item = flowboxchild.get_child () as ArticleBox;
                     if (item != null && item.post == post) {
-                        debug ("Found Post - destroy it: %s", post.url);
-                        flowboxchild.destroy ();
+                        new_article_flow.remove (flowboxchild);
+                        app.factory.remove_article_box (flowboxchild);
                         break;
                     }
                 }
@@ -152,11 +166,18 @@ namespace GnomeNews {
             List<weak Gtk.Widget> children = null;
             if (is_flow) {
                 children = new_article_flow.get_children ();
+                foreach (Gtk.Widget w in children) {
+                    var widget = w as Gtk.FlowBoxChild;
+                    assert (widget != null);
+                    new_article_flow.remove (widget);
+                    app.factory.remove_article_box (widget);
+                }    
             } else {
                 children = new_article_list.get_children ();
+                foreach (Gtk.Widget w in children)
+                    w.destroy ();
             }
-            foreach (Gtk.Widget w in children)
-                w.destroy ();
+            
             
             // populate with new widgets
             var posts = app.controller.post_sorted_by_date(true);
@@ -172,8 +193,10 @@ namespace GnomeNews {
                 this.article_view.remove (new_article_list);
                 this.article_view.add (new_article_flow);
                 
-                foreach (Post p in posts)
-                    new_article_flow.add (new PostImage (p));
+                foreach (Post p in posts) {
+                    var box = app.factory.get_article_box (p);
+                    new_article_flow.add (box);
+                }
             }
 
             is_flow = !is_flow;

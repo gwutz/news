@@ -93,34 +93,4 @@ namespace GnomeNews {
             }
         }
     }
-    
-    public class PostImage : Gtk.Overlay {
-        public Post post { get; set; }
-        private Gtk.Image img;
-        
-        public PostImage (Post post) {
-            Object ();
-            this.height_request = 256;
-            this.width_request = 256;
-            
-            img = new Gtk.Image.from_file (post.thumbnail);
-            img.get_style_context ().add_class ("feedbox");
-            this.add (img);
-            if (!post.thumb_exists) {
-                var spinner = new Gtk.Spinner ();
-                spinner.start ();
-                spinner.get_style_context ().add_class ("postspinner");
-                post.thumb_ready.connect (() => {
-                    spinner.stop ();
-                    this.remove (spinner);
-                    img.set_from_file (post.thumbnail);
-                    this.show_all ();
-                });
-                this.add_overlay (spinner);
-            }
-            
-            this.post = post;
-            this.show_all ();
-        }
-    }
 }

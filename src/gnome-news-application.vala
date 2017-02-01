@@ -25,11 +25,13 @@ namespace GnomeNews {
         public Controller controller;
         private TrackerRss tracker_rss;
         private Tracker tracker;
+        public WidgetFactory factory;
 
         public Application () {
             Object (application_id: "org.gnome.News");
 
             controller = new Controller ();
+            factory = new WidgetFactory ();
             
             try {
                 tracker_rss = Bus.get_proxy_sync<TrackerRss>(BusType.SESSION, "org.freedesktop.Tracker1.Miner.RSS",
@@ -79,9 +81,8 @@ namespace GnomeNews {
             
             var posts = controller.post_sorted_by_date(true);
             foreach (Post p in posts) {
-                var img = new PostImage (p);
+                var img = factory.get_article_box (p);
                 window.new_article_flow.add (img);
-                //window.new_article_list.add (new ArticleList (p));
                 window.new_article_flow.show ();
             }
             window.show ();

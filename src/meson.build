@@ -7,7 +7,9 @@ gnome_news_sources = [
     'gnome-news-controller.vala',
     'gnome-news-post.vala',
     'gnome-news-article-list.vala',
+    'gnome-news-article-box.vala',
     'gnome-news-article-view.vala',
+    'gnome-news-widget-factory.vala',
     gnome_news_resources
 ]
 

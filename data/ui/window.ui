@@ -84,6 +84,8 @@
       <object class="GtkStack" id="Stack">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="transition_duration">100</property>
+        <property name="transition_type">crossfade</property>
         <child>
           <object class="GtkScrolledWindow">
             <property name="visible">True</property>
@@ -198,7 +200,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkToggleButton">
+          <object class="GtkToggleButton" id="SearchButton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
@@ -229,6 +231,23 @@
           <packing>
             <property name="pack_type">end</property>
             <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="StarButton">
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="icon_name">non-starred-symbolic</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+            <property name="position">4</property>
           </packing>
         </child>
       </object>
