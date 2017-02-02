@@ -52,6 +52,9 @@ namespace News.UI {
                 //img.set_from_file (post.thumbnail);
             }
             this.post = post;
+            if (post.read) {
+                img.set_opacity (0.5);
+            }
         }
         
         public void clear () {

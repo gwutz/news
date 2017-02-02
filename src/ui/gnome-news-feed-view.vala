@@ -43,6 +43,7 @@ namespace News.UI {
             var posts_scroll = new Gtk.ScrolledWindow (null, null);
             posts_box        = new Gtk.FlowBox (); // FIXME: use generic view here
             posts_box.set_min_children_per_line (2);
+            posts_box.child_activated.connect (show_article);
             posts_scroll.add (posts_box);
             add2 (posts_scroll);
         }
@@ -84,6 +85,15 @@ namespace News.UI {
             
             var posts = app.controller.post_sorted_by_channel (feedrow.feed.url);
             populate_box (posts);
+        }
+        
+        private void show_article (Gtk.FlowBoxChild child) {
+            var toplevel = child.get_toplevel ();
+            if (toplevel is Window) {
+                var window = toplevel as Window;
+                News.Post post = ((ArticleBox)child.get_child()).post;
+                window.show_article (post);
+            }
         }
     }
     

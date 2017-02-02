@@ -107,7 +107,7 @@ namespace News.UI {
             show_article (post);
         }
         
-        private void show_article (News.Post post) {
+        internal void show_article (News.Post post) {
             
             article = new ArticleView ();
             article.post =  post;
