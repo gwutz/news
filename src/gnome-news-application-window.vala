@@ -148,16 +148,20 @@ namespace GnomeNews {
         private void item_updated (Post post, Controller.Updated updated) {
             var app = get_application () as GnomeNews.Application;
             if (updated == Controller.Updated.MARK_AS_READ) {
-                var children = this.new_article_flow.get_children ();
-                foreach (Gtk.Widget w in children) {
-                    var flowboxchild = w as Gtk.FlowBoxChild;
-                    var item = flowboxchild.get_child () as ArticleBox;
-                    if (item != null && item.post == post) {
-                        new_article_flow.remove (flowboxchild);
-                        app.factory.remove_article_box (flowboxchild);
-                        break;
+                // Do this a second later, so the transition is seamless and nicer
+                Timeout.add(1000, () => {
+                    var children = this.new_article_flow.get_children ();
+                    foreach (Gtk.Widget w in children) {
+                        var flowboxchild = w as Gtk.FlowBoxChild;
+                        var item = flowboxchild.get_child () as ArticleBox;
+                        if (item != null && item.post == post) {
+                            new_article_flow.remove (flowboxchild);
+                            app.factory.remove_article_box (flowboxchild);
+                            break;
+                        }
                     }
-                }
+                    return false;
+                });
             }
             
         }
