@@ -18,7 +18,7 @@
  * along with gnome-news. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace GnomeNews {
+namespace News.UI {
 
     public class ArticleBox : Gtk.Overlay {
         public Post post { get; set; }
@@ -48,7 +48,7 @@ namespace GnomeNews {
                 post.thumb_ready.connect (show_image);
                 add_overlay (spinner);
             } else {
-                Lumber.Company.get_instance ().enqueue (new ImageLoader(this));
+                Lumber.Company.get_instance ().enqueue (new News.Background.ImageLoader(this));
                 //img.set_from_file (post.thumbnail);
             }
             this.post = post;

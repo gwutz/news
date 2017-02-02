@@ -75,7 +75,7 @@
       </packing>
     </child>
   </object>
-  <template class="GnomeNewsWindow" parent="GtkApplicationWindow">
+  <template class="NewsUIWindow" parent="GtkApplicationWindow">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="default_width">640</property>
@@ -130,47 +130,6 @@
               <packing>
                 <property name="name">New</property>
                 <property name="title" translatable="yes">New</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkBox">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <child>
-                  <object class="GtkRevealer">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="transition_type">none</property>
-                    <property name="reveal_child">True</property>
-                    <child>
-                      <object class="GtkListBox">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkFlowBox">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="name">Feeds</property>
-                <property name="title" translatable="yes">Feeds</property>
-                <property name="position">1</property>
               </packing>
             </child>
           </object>

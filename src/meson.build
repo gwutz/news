@@ -1,17 +1,20 @@
 
 gnome_news_sources = [
     'main.vala',
-    'gnome-news-application.vala',
-    'gnome-news-application-window.vala',
-    'gnome-news-tracker.vala',
     'gnome-news-controller.vala',
+    'gnome-news-tracker.vala',
     'gnome-news-post.vala',
-    'gnome-news-article-list.vala',
-    'gnome-news-article-box.vala',
-    'gnome-news-article-view.vala',
+    'gnome-news-feed.vala',
+    'ui/gnome-news-application.vala',
+    'ui/gnome-news-application-window.vala',
+    'ui/gnome-news-article-list.vala',
+    'ui/gnome-news-article-box.vala',
+    'ui/gnome-news-article-view.vala',
+    'ui/gnome-news-widget-factory.vala',
+    'ui/gnome-news-feed-view.vala',
+    'ui/gnome-news-updateable.vala',
     'worker/gnome-news-company.vala',
     'worker/gnome-news-worker.vala',
-    'gnome-news-widget-factory.vala',
     'worker/gnome-news-image-loader.vala',
     gnome_news_resources
 ]

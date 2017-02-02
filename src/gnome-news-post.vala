@@ -19,7 +19,7 @@
  */
 
 using Tracker;
-namespace GnomeNews {
+namespace News {
     public class Post : Object {
         //public Thumb thumbnailer = new Thumb ();
     
@@ -42,7 +42,7 @@ namespace GnomeNews {
             this.read = cursor.get_boolean (4);
             //this.starred = cursor.get_boolean (5);
             
-            this.thumbnail = Application.CACHE + compute_hash () + ".png";
+            this.thumbnail = News.UI.Application.CACHE + compute_hash () + ".png";
             if (!FileUtils.test (this.thumbnail, FileTest.EXISTS)) {
                 Idle.add (() => {
                     generate_thumbnail ();

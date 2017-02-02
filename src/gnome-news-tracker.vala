@@ -18,7 +18,7 @@
  * along with gnome news. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace GnomeNews {
+namespace News {
 
     [DBus (name = "org.freedesktop.Tracker1.Miner")]
     public interface TrackerRss : Object {

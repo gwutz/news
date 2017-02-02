@@ -19,7 +19,7 @@
  */
 
 using Tracker;
-namespace GnomeNews {
+namespace News {
     public class Controller : Object {
     
         public enum Updated {
@@ -42,7 +42,6 @@ namespace GnomeNews {
         }
         
         public List<Post> post_sorted_by_date (bool unread = false) {
-            debug ("Start Querying DB");
             StringBuilder builder = new StringBuilder ("
                 SELECT 
                     nie:title(?msg) AS title
@@ -54,16 +53,7 @@ namespace GnomeNews {
                 WHERE
                 {
                     ?msg a mfo:FeedMessage");
-            /*string query = """
-                SELECT 
-                    nie:title(?msg) AS title
-                    nmo:htmlMessageContent(?msg) AS content
-                    nie:url(?msg) AS url
-                    nco:fullname(?creator) AS fullname
-                WHERE
-                {
-                    ?msg a mfo:FeedMessage""";*/
-            
+                    
             if (unread) {
                 builder.append ("; nmo:isRead false");
             }
@@ -76,7 +66,41 @@ namespace GnomeNews {
                 ORDER BY DESC (nie:contentCreated(?msg))");
                     
             var result = sparql.query (builder.str);
-            debug ("Querying Done");
+
+            var posts = new List<Post>();
+            while (result.next ()) {
+                posts.append(new Post(result));
+            }
+            
+            return posts;
+        }
+        
+        public List<Post> post_sorted_by_channel (string url) {
+            string query = """
+                SELECT
+                  nie:title(?msg) AS title
+                  nmo:htmlMessageContent(?msg) AS content
+                  nie:url(?msg) AS url
+                  nco:fullname(?creator) AS fullname
+                  nmo:isRead(?msg) AS is_read
+                  ?msg BOUND(?tag) as is_starred
+                  nie:url(?website) AS author_homepage
+                  nco:emailAddress(?email) AS author_email
+                  nie:contentCreated(?msg) AS date
+                  { ?msg a mfo:FeedMessage;
+                         nmo:communicationChannel ?chan .
+                    ?chan nie:url "%s" .
+                    OPTIONAL { ?msg nco:creator ?creator .
+                               ?msg nao:hasTag ?tag .
+                               FILTER(?tag = nao:predefined-tag-favorite) .
+                               OPTIONAL { ?creator nco:hasEmailAddress ?email } .
+                               OPTIONAL { ?creator nco:websiteUrl ?website }}
+                  }
+                ORDER BY DESC (nie:contentCreated(?msg))
+            """.printf (url);
+            
+            var result = sparql.query (query);
+            
             var posts = new List<Post>();
             while (result.next ()) {
                 posts.append(new Post(result));
@@ -133,6 +157,24 @@ namespace GnomeNews {
                     """.printf (post.url);
             }
             sparql.update (query);
+        }
+        
+        public List<Feed> get_feed_list () {
+            string query = """
+                SELECT
+                  nie:url(?chan) AS url
+                  nie:title(?chan) AS title
+                  { 
+                    ?chan a mfo:FeedChannel
+                  }
+                ORDER BY nie:title(?chan)
+                """;
+            var result = sparql.query (query);
+            var feeds = new List<Feed> ();
+            while (result.next ()) {
+                feeds.append (new Feed (result));
+            }
+            return feeds;
         }
 
     }

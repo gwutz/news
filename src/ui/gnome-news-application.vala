@@ -18,7 +18,7 @@
  * along with gnome news. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace GnomeNews {
+namespace News.UI {
 
     public class Application : Gtk.Application {
         public static string CACHE = Environment.get_user_cache_dir () + "/News/";
@@ -76,11 +76,11 @@ namespace GnomeNews {
 
         protected override void activate () {
             setup_css_theming ();
-            var window = new GnomeNews.Window (this);
+            var window = new News.UI.Window (this);
             this.add_window (window);
             
             var posts = controller.post_sorted_by_date(true);
-            foreach (Post p in posts) {
+            foreach (News.Post p in posts) {
                 var img = factory.get_article_box (p);
                 window.new_article_flow.add (img);
                 window.new_article_flow.show ();

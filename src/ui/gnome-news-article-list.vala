@@ -18,7 +18,7 @@
  * along with gnome-news. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace GnomeNews {
+namespace News.UI {
     [GtkTemplate (ui = "/org/gnome/News/ui/articlerow.ui")]
     public class ArticleList : Gtk.Box {
         public Post post { get; set; }

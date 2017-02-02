@@ -18,7 +18,7 @@
  * along with gnome news. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace GnomeNews {
+namespace News.UI {
 
     [GtkTemplate (ui = "/org/gnome/News/ui/window.ui")]
     public class Window : Gtk.ApplicationWindow {
@@ -66,7 +66,7 @@ namespace GnomeNews {
 
         public Window (Application app) {
             Object (application: app);
-            //stack.notify["visible-child"].connect (view_changed);
+
             var builder = new Gtk.Builder.from_resource ("/org/gnome/News/ui/article.ui");
             this.new_article_flow = builder.get_object("NewArticleFlow") as Gtk.FlowBox;
             article_view.add (new_article_flow);
@@ -78,27 +78,36 @@ namespace GnomeNews {
             
             this.back_btn.clicked.connect (return_article);
             
+            var feed_view = new News.UI.FeedView ();
+            stack.add_titled (feed_view, feed_view.name, feed_view.name);
+            
+            stack.notify["visible-child"].connect (view_changed);
+            
             //app.controller.items_updated.connect (items_updated);
             app.controller.feeds_updated.connect (feeds_updated);
             
             app.controller.item_updated.connect (item_updated);
         }
-
-        /*private void view_changed() {
-
-        }*/
+        
+        private void view_changed () {
+            var to_view = stack.get_visible_child ();
+            if (to_view is News.UI.Updateable) {
+                var updateable = to_view as News.UI.Updateable;
+                updateable.update ();
+            }
+        }
         
         private void show_article_flow (Gtk.FlowBoxChild child) {
-            Post post = ((ArticleBox)child.get_child()).post;
+            News.Post post = ((ArticleBox)child.get_child()).post;
             show_article (post);
         }
         
         private void show_article_list (Gtk.ListBoxRow row) {
-            Post post = ((ArticleList)row.get_child()).post;
+            News.Post post = ((ArticleList)row.get_child()).post;
             show_article (post);
         }
         
-        private void show_article (Post post) {
+        private void show_article (News.Post post) {
             
             article = new ArticleView ();
             article.post =  post;
@@ -108,7 +117,7 @@ namespace GnomeNews {
             this.stack.set_visible_child (article);
             this.stack.show_all ();
             set_headerbar_article (post);
-            var app = get_application () as GnomeNews.Application;
+            var app = get_application () as Application;
             app.controller.mark_post_as_read (post);
         }
         
@@ -146,7 +155,7 @@ namespace GnomeNews {
         }
         
         private void item_updated (Post post, Controller.Updated updated) {
-            var app = get_application () as GnomeNews.Application;
+            var app = get_application () as Application;
             if (updated == Controller.Updated.MARK_AS_READ) {
                 // Do this a second later, so the transition is seamless and nicer
                 Timeout.add(1000, () => {
@@ -178,7 +187,7 @@ namespace GnomeNews {
                 return;
             }
             
-            var app = get_application () as GnomeNews.Application;
+            var app = get_application () as Application;
             if (article.post.starred) {
                 app.controller.mark_post_as_starred (article.post, false);
                 article.post.starred = false;
@@ -192,7 +201,7 @@ namespace GnomeNews {
         
         [GtkCallback]
         private void mode_switched () {
-            var app = get_application () as GnomeNews.Application;
+            var app = get_application () as Application;
             
             // remove widgets from current view
             List<weak Gtk.Widget> children = null;
@@ -236,7 +245,7 @@ namespace GnomeNews {
         
         [GtkCallback]
         private void add_new_url (Gtk.Button button) {
-                var app = get_application () as GnomeNews.Application;
+                var app = get_application () as Application;
                 app.controller.add_channel (new_url.get_text ());
         }
         
