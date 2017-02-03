@@ -32,12 +32,41 @@ namespace News.UI {
         [GtkChild (name = "date")]
         private Gtk.Label date;
         
+        [GtkChild (name = "starred")]
+        private Gtk.Button starred;
+        
         public ArticleList (Post p) {
             this.post = p;
             this.title.set_text(p.title);
             this.author.set_text(p.author);
-            //this.date.set_text ()
+            var date_str = p.date.format ("%d. %B");
+            var now = new DateTime.now_local ();
+            var diff = now.difference (this.post.date)/TimeSpan.DAY;
+            
+            if (diff == 0) date_str = "Today";
+            else if (diff == 1) date_str = "Yesterday";
+            
+            this.date.set_text (date_str);
+            
+            if (post.starred) {
+                starred.image = new Gtk.Image.from_icon_name ("starred-symbolic", Gtk.IconSize.MENU);
+            }
             this.show_all ();
+        }
+        
+        [GtkCallback]
+        private void star_article (Gtk.Button btn) {
+            if (post.starred) {
+                //unstar
+                starred.image = new Gtk.Image.from_icon_name ("non-starred-symbolic", Gtk.IconSize.MENU);
+            } else {
+                //star
+                starred.image = new Gtk.Image.from_icon_name ("starred-symbolic", Gtk.IconSize.MENU);
+            }
+            
+            var app = GLib.Application.get_default() as Application;
+            app.controller.mark_post_as_starred (post, !post.starred);
+            post.starred = !post.starred;
         }
     }
 }

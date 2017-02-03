@@ -188,13 +188,25 @@ namespace News {
         }
         
         public void remove_channel (string url) {
-            string query = """
+        
+            string messages = """
+                DELETE
+                    { ?msg a mfo:FeedMessage }
+                WHERE
+                    { 
+                        ?msg nmo:communicationChannel ?chan .
+                        ?chan nie:url "%s"
+                    }
+            """.printf (url);
+            sparql.update (messages);
+        
+            string communicationChannel = """
                 DELETE
                     { ?chan a rdfs:Resource }
                 WHERE
                     { ?chan nie:url "%s" }
             """.printf (url);
-            sparql.update (query);
+            sparql.update (communicationChannel);
         }
         
         private HashTable<string, Value?> parse_cursor (Sparql.Cursor cursor) {
@@ -215,6 +227,11 @@ namespace News {
                         parsed_data.insert (cursor.get_variable_name(i), cursor.get_integer (i)); break;
                     case Sparql.ValueType.DOUBLE:
                         parsed_data.insert (cursor.get_variable_name(i), cursor.get_double (i)); break;
+                    case Sparql.ValueType.DATETIME:
+                        var tv = TimeVal();
+                        tv.from_iso8601 (cursor.get_string (i));
+                        parsed_data.insert (cursor.get_variable_name (i), new DateTime.from_timeval_local (tv));
+                        break;
                     default:
                         try {
                             parsed_data.insert (cursor.get_variable_name(i), cursor.get_string (i)); break;

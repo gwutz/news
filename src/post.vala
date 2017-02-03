@@ -29,6 +29,7 @@ namespace News {
         public string content { get; set; }
         public string url { get; set; }
         public string author { get; set; }
+        public DateTime date { get; set; }
         public string thumbnail { get; set; }
         public bool starred { get; set; }
         public bool read { get; set; }
@@ -39,6 +40,7 @@ namespace News {
             this.content = (string)data.get ("content");
             this.url = (string)data.get ("url");
             this.author = (string)data.get ("fullname");
+            this.date = (DateTime)data.get ("date");
             this.read = (bool)data.get ("is_read");
             this.starred = (bool)data.get ("is_starred");
             
