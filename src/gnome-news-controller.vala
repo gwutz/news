@@ -119,6 +119,15 @@ namespace News {
                            nie:url "%s" }
             """.printf (update_interval, url);
             sparql.update (query);
+            try {
+                sparql.update (query);
+            } catch (DBusError derror) {
+                error ("There was an error to communicate with the dbus interface %s", derror.message);
+            } catch (IOError ioerror) {
+                error ("There was an error to communicate with the io interface %s", ioerror.message);
+            } catch (Error err) {
+                error ("A general error occurred %s", err.message);
+            }
         }
         
         public void mark_post_as_read (Post post) {
