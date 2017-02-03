@@ -38,6 +38,7 @@ namespace News.UI {
             feeds_list   = new Gtk.ListBox ();
             feeds_list.get_style_context ().add_class ("sidebar");
             feeds_list.row_activated.connect (feed_selected);
+            feeds_list.button_release_event.connect (list_box_button_release);
             feeds_scroll.add (feeds_list);
             add1 (feeds_scroll);
             
@@ -50,6 +51,14 @@ namespace News.UI {
             posts_box.child_activated.connect (show_article);
             posts_scroll.add (posts_box);
             add2 (posts_scroll);
+            
+            // add action
+//            app = Gio.Application.get_default()
+//        delete_channel_action = app.lookup_action('delete_channel')
+//        delete_channel_action.connect('activate', self.delete_channel)
+            var app = GLib.Application.get_default ();
+            var delete_action = app.lookup_action("delete_channel") as SimpleAction;
+            delete_action.activate.connect (delete_channel);
         }
         
         public void update () {
@@ -104,6 +113,23 @@ namespace News.UI {
             populate_box (posts);
         }
         
+        private bool list_box_button_release (Gdk.EventButton event) {
+            var selected_row = feeds_list.get_row_at_y ((int)event.y);
+            var button = event.button;
+            if (button == Gdk.BUTTON_PRIMARY) {
+                return Gdk.EVENT_PROPAGATE;
+            }
+            else if (button == Gdk.BUTTON_SECONDARY) {
+                int index = selected_row.get_index ();
+                var menu = new Menu ();
+                menu.append ("Remove Channel", "app.delete_channel(%d)".printf (index));
+                var popover = new Gtk.Popover.from_model (selected_row, menu);
+                popover.set_position (Gtk.PositionType.BOTTOM);
+                popover.show ();
+            }
+            return Gdk.EVENT_STOP;
+        }
+        
         private void show_article (Gtk.FlowBoxChild child) {
             selected_article = child.get_child () as ArticleBox;
             should_update = false;
@@ -114,6 +140,16 @@ namespace News.UI {
                 News.Post post = selected_article.post;
                 window.show_article (post);
             }
+        }
+        
+        private void delete_channel (Variant? parameter) {
+            int index = (int)parameter.get_int32 ();
+            var row = feeds_list.get_children ().nth_data (index) as FeedRow;
+            if (row != null) {
+                var app = GLib.Application.get_default () as Application;
+                app.controller.remove_channel (row.feed.url);
+            }
+            
         }
     }
     

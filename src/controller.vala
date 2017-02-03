@@ -187,6 +187,16 @@ namespace News {
             return feeds;
         }
         
+        public void remove_channel (string url) {
+            string query = """
+                DELETE
+                    { ?chan a rdfs:Resource }
+                WHERE
+                    { ?chan nie:url "%s" }
+            """.printf (url);
+            sparql.update (query);
+        }
+        
         private HashTable<string, Value?> parse_cursor (Sparql.Cursor cursor) {
             HashTable<string, Value?> parsed_data = new HashTable<string, Value?> (str_hash, str_equal);
             var n_columns = cursor.n_columns;

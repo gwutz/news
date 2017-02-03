@@ -36,6 +36,8 @@ namespace News.UI {
             if (!FileUtils.test (CACHE, FileTest.EXISTS)) {
                 File.new_for_path (CACHE).make_directory ();
             }
+            var delete_channel_action = new SimpleAction("delete_channel", VariantType.INT32);
+            add_action(delete_channel_action);
             
             try {
                 tracker_rss = Bus.get_proxy_sync<TrackerRss>(BusType.SESSION, "org.freedesktop.Tracker1.Miner.RSS",
