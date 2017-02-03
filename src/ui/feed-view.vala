@@ -79,6 +79,7 @@ namespace News.UI {
                 }
             }
             
+            debug ("Got Url: %s", feeds.first ().data.url);
             var posts = app.controller.post_sorted_by_channel (feeds.first ().data.url);
             populate_box (posts);
 
