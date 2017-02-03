@@ -50,6 +50,7 @@ namespace News {
                     nco:fullname(?creator) AS fullname
                     nmo:isRead(?msg) AS is_read
                     ?msg BOUND(?tag) as is_starred
+                    nie:contentCreated(?msg) AS date
                 WHERE
                 {
                     ?msg a mfo:FeedMessage");
@@ -60,7 +61,8 @@ namespace News {
             
             builder.append (". OPTIONAL {
                         ?msg nco:creator ?creator .
-                        ?msg nao:hasTag ?tag
+                        ?msg nao:hasTag ?tag .
+                        FILTER(?tag = nao:predefined-tag-favorite)
                     }
                 }
                 ORDER BY DESC (nie:contentCreated(?msg))");
@@ -69,7 +71,7 @@ namespace News {
 
             var posts = new List<Post>();
             while (result.next ()) {
-                posts.append(new Post(result));
+                posts.append(new Post(parse_cursor(result)));
             }
             
             return posts;
@@ -103,7 +105,7 @@ namespace News {
             
             var posts = new List<Post>();
             while (result.next ()) {
-                posts.append(new Post(result));
+                posts.append(new Post(parse_cursor(result)));
             }
             
             return posts;
@@ -118,7 +120,6 @@ namespace News {
                            mfo:feedSettings _:FeedSettings ;
                            nie:url "%s" }
             """.printf (update_interval, url);
-            sparql.update (query);
             try {
                 sparql.update (query);
             } catch (DBusError derror) {
@@ -184,6 +185,36 @@ namespace News {
                 feeds.append (new Feed (result));
             }
             return feeds;
+        }
+        
+        private HashTable<string, Value?> parse_cursor (Sparql.Cursor cursor) {
+            HashTable<string, Value?> parsed_data = new HashTable<string, Value?> (str_hash, str_equal);
+            var n_columns = cursor.n_columns;
+            
+            for (int i = 0; i < n_columns; i++) {
+                var vtype = cursor.get_value_type (i);
+
+                switch (vtype) {
+                    case Sparql.ValueType.STRING:
+                        parsed_data.insert (cursor.get_variable_name(i), cursor.get_string (i)); break;
+                    case Sparql.ValueType.BOOLEAN:
+                        parsed_data.insert (cursor.get_variable_name(i), cursor.get_boolean (i)); break;
+                    case Sparql.ValueType.URI:
+                        parsed_data.insert (cursor.get_variable_name(i), cursor.get_string (i)); break;
+                    case Sparql.ValueType.INTEGER:
+                        parsed_data.insert (cursor.get_variable_name(i), cursor.get_integer (i)); break;
+                    case Sparql.ValueType.DOUBLE:
+                        parsed_data.insert (cursor.get_variable_name(i), cursor.get_double (i)); break;
+                    default:
+                        try {
+                            parsed_data.insert (cursor.get_variable_name(i), cursor.get_string (i)); break;
+                        } catch (Error e) {
+                            error ("This shouldn't ever happen: %s", e.message);
+                        }
+                }
+            }
+            
+            return parsed_data;
         }
 
     }

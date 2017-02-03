@@ -34,13 +34,13 @@ namespace News {
         public bool read { get; set; }
         public bool thumb_exists = false;
         
-        public Post (Sparql.Cursor cursor) {
-            this.title = cursor.get_string (0);
-            this.content = cursor.get_string (1);
-            this.url = cursor.get_string (2);
-            this.author = cursor.get_string (3);
-            this.read = cursor.get_boolean (4);
-            //this.starred = cursor.get_boolean (5);
+        public Post (HashTable<string, Value?> data) {
+            this.title = (string)data.get ("title");
+            this.content = (string)data.get ("content");
+            this.url = (string)data.get ("url");
+            this.author = (string)data.get ("fullname");
+            this.read = (bool)data.get ("is_read");
+            this.starred = (bool)data.get ("is_starred");
             
             this.thumbnail = News.UI.Application.CACHE + compute_hash () + ".png";
             if (!FileUtils.test (this.thumbnail, FileTest.EXISTS)) {

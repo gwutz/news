@@ -29,10 +29,15 @@ namespace News.UI {
         [GtkChild (name = "author")]
         private Gtk.Label author;
         
+        [GtkChild (name = "date")]
+        private Gtk.Label date;
+        
         public ArticleList (Post p) {
             this.post = p;
             this.title.set_text(p.title);
             this.author.set_text(p.author);
+            //this.date.set_text ()
+            this.show_all ();
         }
     }
 }
