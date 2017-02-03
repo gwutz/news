@@ -169,6 +169,24 @@ namespace News.UI {
             load_html(html, null);
             }
         }
+        
+        public ArticleView () {
+            decide_policy.connect (on_policy);
+        }
+        
+        private bool on_policy (WebKit.PolicyDecision decision, WebKit.PolicyDecisionType type) {
+            if (type == WebKit.PolicyDecisionType.NAVIGATION_ACTION) {
+                var navidecision = decision as WebKit.NavigationPolicyDecision;
+                var uri = navidecision.get_navigation_action ().get_request ().get_uri ();
+                if (uri != "about:blank" && navidecision.navigation_type == WebKit.NavigationType.LINK_CLICKED) {
+                    navidecision.ignore ();
+                    Gtk.show_uri (null, uri, Gdk.CURRENT_TIME);
+                }
+                return true;
+            }
+            return false;
+        }
+        
     }
 
 }

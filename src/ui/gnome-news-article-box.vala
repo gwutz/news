@@ -38,6 +38,7 @@ namespace News.UI {
             
             set_post_data (post);
             
+            this.valign = Gtk.Align.START;
             this.show_all ();
         }
         
