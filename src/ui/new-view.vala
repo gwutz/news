@@ -1,5 +1,5 @@
 /*
- * main.vala
+ * new-view.vala
  * This file is part of news
  *
  * Copyright (C) 2017 - Günther Wutz
@@ -17,10 +17,18 @@
  * You should have received a copy of the GNU General Public License
  * along with news. If not, see <http://www.gnu.org/licenses/>.
  */
-namespace News {
-    public static void main(string[] args) {
-        var app = new News.UI.Application ();
-        app.run (args);
-    }
-}
 
+namespace News.UI {
+
+    public class NewView : Gtk.ScrolledWindow, Updateable {
+        
+        public NewView () {
+            
+        }
+        
+        public void update () {
+            
+        }
+    }
+
+}

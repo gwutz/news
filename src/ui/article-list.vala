@@ -1,5 +1,5 @@
 /*
- * main.vala
+ * article-list.vala
  * This file is part of news
  *
  * Copyright (C) 2017 - Günther Wutz
@@ -17,10 +17,27 @@
  * You should have received a copy of the GNU General Public License
  * along with news. If not, see <http://www.gnu.org/licenses/>.
  */
-namespace News {
-    public static void main(string[] args) {
-        var app = new News.UI.Application ();
-        app.run (args);
+
+namespace News.UI {
+    [GtkTemplate (ui = "/org/gnome/News/ui/articlerow.ui")]
+    public class ArticleList : Gtk.Box {
+        public Post post { get; set; }
+        
+        [GtkChild (name = "title")]
+        private Gtk.Label title;
+        
+        [GtkChild (name = "author")]
+        private Gtk.Label author;
+        
+        [GtkChild (name = "date")]
+        private Gtk.Label date;
+        
+        public ArticleList (Post p) {
+            this.post = p;
+            this.title.set_text(p.title);
+            this.author.set_text(p.author);
+            //this.date.set_text ()
+            this.show_all ();
+        }
     }
 }
-

@@ -1,5 +1,5 @@
 /*
- * main.vala
+ * image-loader.vala
  * This file is part of news
  *
  * Copyright (C) 2017 - Günther Wutz
@@ -17,10 +17,21 @@
  * You should have received a copy of the GNU General Public License
  * along with news. If not, see <http://www.gnu.org/licenses/>.
  */
-namespace News {
-    public static void main(string[] args) {
-        var app = new News.UI.Application ();
-        app.run (args);
+
+namespace News.Background {
+    public class ImageLoader : Lumber.Worker<Gdk.Pixbuf> {
+        private News.UI.ArticleBox widget;
+    
+        public ImageLoader (News.UI.ArticleBox widget) {
+            this.widget = widget;
+        }
+    
+        public override Gdk.Pixbuf do_in_background () {
+            return new Gdk.Pixbuf.from_file (widget.post.thumbnail);
+        }
+        
+        public override void on_post_execute (Gdk.Pixbuf result) {
+            widget.img.set_from_pixbuf (result);
+        }
     }
 }
-

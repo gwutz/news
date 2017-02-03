@@ -1,5 +1,5 @@
 /*
- * main.vala
+ * feed.vala
  * This file is part of news
  *
  * Copyright (C) 2017 - Günther Wutz
@@ -17,10 +17,17 @@
  * You should have received a copy of the GNU General Public License
  * along with news. If not, see <http://www.gnu.org/licenses/>.
  */
+
+using Tracker;
 namespace News {
-    public static void main(string[] args) {
-        var app = new News.UI.Application ();
-        app.run (args);
+    
+    public class Feed : Object {
+        public string title { get; set; }
+        public string url { get; set; }
+        
+        public Feed (Sparql.Cursor cursor) {
+            title = cursor.get_string (1);
+            url = cursor.get_string (0);
+        }
     }
 }
-
