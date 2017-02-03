@@ -28,6 +28,7 @@ namespace News.UI {
             }
             set {
                 _post = value;
+                var author = _post.author != null? _post.author : "";
                 var html = """
                 <style>
                     h1,
@@ -164,7 +165,7 @@ namespace News.UI {
                   <p>%s</p>
                   <div id="footer">
                 </body>
-            """.printf (post.title, post.author, post.content);
+            """.printf (post.title, author, post.content);
             
             load_html(html, null);
             }
