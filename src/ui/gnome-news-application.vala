@@ -33,6 +33,10 @@ namespace News.UI {
             controller = new Controller ();
             factory = new WidgetFactory ();
             
+            if (!FileUtils.test (CACHE, FileTest.EXISTS)) {
+                File.new_for_path (CACHE).make_directory ();
+            }
+            
             try {
                 tracker_rss = Bus.get_proxy_sync<TrackerRss>(BusType.SESSION, "org.freedesktop.Tracker1.Miner.RSS",
                                                              "/org/freedesktop/Tracker1/Miner/RSS");
