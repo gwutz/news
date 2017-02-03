@@ -36,14 +36,14 @@ namespace News.UI {
             try {
                 tracker_rss = Bus.get_proxy_sync<TrackerRss>(BusType.SESSION, "org.freedesktop.Tracker1.Miner.RSS",
                                                              "/org/freedesktop/Tracker1/Miner/RSS");
-                tracker = Bus.get_proxy_sync<Tracker>(BusType.SESSION, "org.freedesktop.Tracker1",
-                                                      "/org/freedesktop/Tracker1/Resources");
-                tracker.graph_updated.connect ((classname, deleted, inserted) => {
+                //tracker = Bus.get_proxy_sync<Tracker>(BusType.SESSION, "org.freedesktop.Tracker1",
+                //                                      "/org/freedesktop/Tracker1/Resources");
+                //tracker.graph_updated.connect ((classname, deleted, inserted) => {
                     // http://www.tracker-project.org/temp/mfo#FeedMessage
-                    print ("Graph Updated: %s\n", classname);
+                    // print ("Graph Updated: %s\n", classname);
                     //controller.items_updated ();
                     //controller.feeds_updated ();
-                });
+                //});
                 tracker_rss.Start ();
             } catch ( IOError e ){
                 error (e.message);
