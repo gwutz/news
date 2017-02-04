@@ -1,0 +1,37 @@
+# Maintainer: Your Name <info@gunibert.de>
+pkgname=news-feed-reader
+pkgver=0.1
+pkgrel=1
+pkgdesc="A feedreader in the style of gnome news"
+arch=(any)
+url="http://www.github.com/gwutz/news"
+license=('GPLv3')
+groups=()
+depends=()
+makedepends=()
+optdepends=()
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=()
+install=
+changelog=
+source=("$pkgname"::"git+https://github.com/gwutz/news.git")
+noextract=()
+md5sums=('SKIP') #autofill using updpkgsums
+
+build() {
+  cd "$pkgname"
+  rm -rf build
+
+  mkdir build && cd build
+  meson ..
+  ninja
+}
+
+package() {
+  cd "$pkgname/build"
+
+  DESTDIR="$pkgdir/" ninja install
+}
