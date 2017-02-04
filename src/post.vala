@@ -72,13 +72,24 @@ namespace News {
             this.webview.sensitive = false;
             this.webview.load_changed.connect (draw_thumbnail);
             var author = this.author != null ? this.author : "";
-            this.webview.load_html("""
-                <div style="width: 250px">
-                <h3 style="margin-bottom: 2px">%s</h3>
-                <small style="color: #333">%s</small>
-                <small style="color: #9F9F9F">%s</small>
-                </div>
-            """.printf (title, author, content), null);
+            var html = """
+                    <style>
+                        img {
+                            max-width: 236px;
+                            height: auto;
+                            width: auto;
+                        }
+                    </style>
+                    <body style="width: 236px; margin: 10px; padding: 0">
+                        <div>
+                        <h4 style="margin-bottom: 2px">%s</h4>
+                        <small style="color: #333">%s</small>
+                        <div style="color: #9F9F9F; margin-top: 10px;">%s</div>
+                        </div>
+                    </body>
+            """.printf (title, author, content);
+            print (html);
+            this.webview.load_html(html, null);
         }
         
         private void draw_thumbnail (WebKit.LoadEvent event) {
