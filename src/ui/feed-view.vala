@@ -96,7 +96,7 @@ namespace News.UI {
         }
         
         public void switch_mode () {
-            print ("Switch\n");
+            
         }
         
         private void populate_box (List<Post> posts) {

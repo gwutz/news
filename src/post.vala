@@ -69,6 +69,7 @@ namespace News {
         
         public void generate_thumbnail () {
             this.webview = new WebKit.WebView ();
+            this.webview.web_context.get_cookie_manager ().set_accept_policy (WebKit.CookieAcceptPolicy.NEVER);
             this.webview.sensitive = false;
             this.webview.load_changed.connect (draw_thumbnail);
             var author = this.author != null ? this.author : "";
@@ -88,13 +89,12 @@ namespace News {
                         </div>
                     </body>
             """.printf (title, author, content);
-            print (html);
             this.webview.load_html(html, null);
         }
         
         private void draw_thumbnail (WebKit.LoadEvent event) {
             if (event == WebKit.LoadEvent.FINISHED) {
-                print ("thumb: %s\n", thumbnail);
+                debug ("thumb: %s\n", thumbnail);
                 this.webview.get_snapshot.begin (WebKit.SnapshotRegion.FULL_DOCUMENT,
                                                  WebKit.SnapshotOptions.NONE,
                                                  null, 

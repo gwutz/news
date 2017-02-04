@@ -72,7 +72,6 @@ namespace News.UI {
             var builder = new Gtk.Builder.from_resource ("/org/gnome/News/appmenu.ui");
             var menu = (MenuModel) builder.get_object ("appmenu");
             this.set_app_menu (menu);
-            print ("App Menu Items: %d\n", menu.get_n_items ());
             
             var quit_action = new SimpleAction ("app.quit", null);
 		    quit_action.activate.connect (quit_cb);
