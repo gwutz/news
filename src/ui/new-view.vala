@@ -40,6 +40,7 @@ namespace News.UI {
             add (container);
             posts_box = new Gtk.FlowBox ();
             posts_box.valign = Gtk.Align.START;
+            posts_box.homogeneous = true;
             posts_box.child_activated.connect (show_article_flow);
             container.add (posts_box);
         }
@@ -82,6 +83,8 @@ namespace News.UI {
                 container.remove (posts_list);
                 posts_list = null;
                 posts_box = new Gtk.FlowBox ();
+                posts_box.valign = Gtk.Align.START;
+                posts_box.homogeneous = true;
                 posts_box.child_activated.connect (show_article_flow);
                 container.add (posts_box);
             }

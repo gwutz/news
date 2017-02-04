@@ -51,6 +51,7 @@ namespace News {
                     nmo:isRead(?msg) AS is_read
                     ?msg BOUND(?tag) as is_starred
                     nie:contentCreated(?msg) AS date
+                    nie:url(?website) AS ?author_homepage
                 WHERE
                 {
                     ?msg a mfo:FeedMessage");
@@ -63,7 +64,7 @@ namespace News {
                 builder.append ("; nao:hasTag nao:predefined-tag-favorite ");
             }
             
-            builder.append (". OPTIONAL {
+            /*builder.append (". OPTIONAL {
                         ?msg nco:creator ?creator .
                         ?msg nao:hasTag ?tag .
                         FILTER(?tag = nao:predefined-tag-favorite) .
@@ -71,13 +72,22 @@ namespace News {
                         OPTIONAL {?creator nco:websiteUrl ?website }
                     }
                 }
-                ORDER BY DESC (nie:contentCreated(?msg))");
+                ORDER BY DESC (nie:contentCreated(?msg))");*/
+            builder.append("
+                 . OPTIONAL { ?msg nao:hasTag ?tag .
+                                FILTER(?tag = nao:predefined-tag-favorite)}
+                 . OPTIONAL {
+                    ?msg nco:creator ?creator .
+                    OPTIONAL { ?creator nco:websiteUrl ?website }
+                }
+            
+            } ORDER BY DESC (nie:contentCreated(?msg))");
             var posts = new List<Post>();
+            debug ("Query: %s", builder.str);
             try {                    
                 var result = sparql.query (builder.str);
 
                 while (result.next ()) {
-                    debug ("Next result");
                     posts.append(new Post(parse_cursor(result)));
                 }
             } catch (Error e) {
@@ -121,6 +131,41 @@ namespace News {
                 error (e.message);
             }
             
+            return posts;
+        }
+        
+        public List<Post> post_by_search (string text) {
+            string query = """
+                SELECT
+                  nie:url(?msg) AS ?url
+                  nie:title(?msg) AS ?title
+                  nco:fullname(?creator) AS ?fullname
+                  nie:url(?website) AS ?author_homepage
+                  nco:emailAddress(?email) AS ?author_email
+                  nie:contentCreated(?msg) AS ?date_created
+                  nmo:htmlMessageContent(?msg) AS ?content
+                  nmo:isRead(?msg) AS ?is_read
+                  ?msg BOUND(?tag) as ?is_starred
+                  { ?msg a mfo:FeedMessage;
+                    fts:match "%s" .
+                    OPTIONAL { ?msg nco:creator ?creator .
+                       ?msg nao:hasTag ?tag .
+                       FILTER(?tag = nao:predefined-tag-favorite) .
+                       OPTIONAL { ?creator nco:hasEmailAddress ?email } .
+                       OPTIONAL { ?creator nco:websiteUrl ?website }
+                    }
+                  }
+                ORDER BY fts:rank(?msg)""".printf (text);
+            query = Sparql.escape_string (query);
+            var posts = new List<Post>();
+            try {
+                var result = sparql.query (query);
+                while (result.next ()) {
+                    posts.append(new Post(parse_cursor(result)));
+                }
+            } catch (Error e) {
+                error (e.message);
+            }
             return posts;
         }
         

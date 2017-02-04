@@ -164,8 +164,11 @@ namespace News.UI {
                   <span>%s</span>
                   <p>%s</p>
                   <div id="footer">
+                  <p><a href="%s">View post</a></p>
+                  </div>
+                  </article>
                 </body>
-            """.printf (post.title, author, post.content);
+            """.printf (post.title, author, post.content, post.url);
             
             load_html(html, null);
             }
