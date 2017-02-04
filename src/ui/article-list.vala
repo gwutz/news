@@ -36,6 +36,7 @@ namespace News.UI {
         private Gtk.Button starred;
         
         public ArticleList (Post p) {
+            this.get_style_context ().add_class ("feeds-list");
             this.post = p;
             this.title.set_text(p.title);
             this.author.set_text(p.author);

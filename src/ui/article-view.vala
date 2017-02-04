@@ -179,9 +179,13 @@ namespace News.UI {
             if (type == WebKit.PolicyDecisionType.NAVIGATION_ACTION) {
                 var navidecision = decision as WebKit.NavigationPolicyDecision;
                 var uri = navidecision.get_navigation_action ().get_request ().get_uri ();
-                if (uri != "about:blank" && navidecision.navigation_type == WebKit.NavigationType.LINK_CLICKED) {
+                if (uri != "about:blank" && navidecision.get_navigation_action ().get_navigation_type () == WebKit.NavigationType.LINK_CLICKED) {
                     navidecision.ignore ();
-                    Gtk.show_uri (null, uri, Gdk.CURRENT_TIME);
+                    try {
+                        Gtk.show_uri (null, uri, Gdk.CURRENT_TIME);
+                    } catch (Error e) {
+                        warning (e.message);
+                    }
                 }
                 return true;
             }

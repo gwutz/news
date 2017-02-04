@@ -26,9 +26,6 @@ namespace News.UI {
         public Gtk.FlowBox new_article_flow;
         public Gtk.ListBox new_article_list;
         private ArticleView article;
-    
-        [GtkChild (name = "ArticleView")]
-        public Gtk.Viewport article_view;
         
         private bool is_flow = true;
 
@@ -67,26 +64,18 @@ namespace News.UI {
         public Window (Application app) {
             Object (application: app);
 
-            var builder = new Gtk.Builder.from_resource ("/org/gnome/News/ui/article.ui");
-            this.new_article_flow = builder.get_object("NewArticleFlow") as Gtk.FlowBox;
-            article_view.add (new_article_flow);
-            this.new_article_list = builder.get_object("NewArticleList") as Gtk.ListBox;
             view_mode.set_image (new Gtk.Image.from_icon_name ("view-list-symbolic", Gtk.IconSize.MENU));
             
-            this.new_article_flow.child_activated.connect (show_article_flow);
-            this.new_article_list.row_activated.connect (show_article_list);
-            
             this.back_btn.clicked.connect (return_article);
+            
+            var new_view = new News.UI.NewView ();
+            stack.add_titled (new_view, new_view.name, new_view.name);
             
             var feed_view = new News.UI.FeedView ();
             stack.add_titled (feed_view, feed_view.name, feed_view.name);
             
             stack.notify["visible-child"].connect (view_changed);
-            
-            //app.controller.items_updated.connect (items_updated);
-            app.controller.feeds_updated.connect (feeds_updated);
-            
-            app.controller.item_updated.connect (item_updated);
+            view_changed ();
         }
         
         private void view_changed () {
@@ -97,18 +86,7 @@ namespace News.UI {
             }
         }
         
-        private void show_article_flow (Gtk.FlowBoxChild child) {
-            News.Post post = ((ArticleBox)child.get_child()).post;
-            show_article (post);
-        }
-        
-        private void show_article_list (Gtk.ListBoxRow row) {
-            News.Post post = ((ArticleList)row.get_child()).post;
-            show_article (post);
-        }
-        
         internal void show_article (News.Post post) {
-            
             article = new ArticleView ();
             article.post =  post;
             article.show_all ();
@@ -153,35 +131,10 @@ namespace News.UI {
             this.back_btn.hide ();
             this.star_btn.hide ();
         }
-        
-        private void item_updated (Post post, Controller.Updated updated) {
-            var app = get_application () as Application;
-            if (updated == Controller.Updated.MARK_AS_READ) {
-                // Do this a second later, so the transition is seamless and nicer
-                Timeout.add(1000, () => {
-                    var children = this.new_article_flow.get_children ();
-                    foreach (Gtk.Widget w in children) {
-                        var flowboxchild = w as Gtk.FlowBoxChild;
-                        var item = flowboxchild.get_child () as ArticleBox;
-                        if (item != null && item.post == post) {
-                            new_article_flow.remove (flowboxchild);
-                            app.factory.remove_article_box (flowboxchild);
-                            break;
-                        }
-                    }
-                    return false;
-                });
-            }
-            
-        }
-        
-        private void feeds_updated () {
-        
-        }
+
         
         [GtkCallback]
         private void star_article (Gtk.Button btn) {
-            print ("star article");
             if (article == null) {
                 debug ("ArticleView destroyed - this shouldn't happen");
                 return;
@@ -201,45 +154,16 @@ namespace News.UI {
         
         [GtkCallback]
         private void mode_switched () {
-            var app = get_application () as Application;
-            
-            // remove widgets from current view
-            List<weak Gtk.Widget> children = null;
-            if (is_flow) {
-                children = new_article_flow.get_children ();
-                foreach (Gtk.Widget w in children) {
-                    var widget = w as Gtk.FlowBoxChild;
-                    assert (widget != null);
-                    new_article_flow.remove (widget);
-                    app.factory.remove_article_box (widget);
-                }    
-            } else {
-                children = new_article_list.get_children ();
-                foreach (Gtk.Widget w in children)
-                    w.destroy ();
+        
+            var active_view = stack.get_visible_child ();
+            if (active_view is Switchable) {
+                (active_view as Switchable).switch_mode ();
             }
-            
-            
-            // populate with new widgets
-            var posts = app.controller.post_sorted_by_date(true);
             if (is_flow) {
                 view_mode.set_image (new Gtk.Image.from_icon_name ("view-grid-symbolic", Gtk.IconSize.MENU));
-                this.article_view.remove (new_article_flow);
-                this.article_view.add (new_article_list);
-
-                foreach (Post p in posts)
-                    new_article_list.add (new ArticleList (p));
             } else {
                 view_mode.set_image (new Gtk.Image.from_icon_name ("view-list-symbolic", Gtk.IconSize.MENU));
-                this.article_view.remove (new_article_list);
-                this.article_view.add (new_article_flow);
-                
-                foreach (Post p in posts) {
-                    var box = app.factory.get_article_box (p);
-                    new_article_flow.add (box);
-                }
             }
-
             is_flow = !is_flow;
         }
         

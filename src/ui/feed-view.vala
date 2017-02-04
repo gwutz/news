@@ -19,7 +19,7 @@
  */
 
 namespace News.UI {
-    public class FeedView : Gtk.Paned, Updateable {
+    public class FeedView : Gtk.Paned, Updateable, Switchable {
         private Gtk.ListBox feeds_list;
         private Gtk.FlowBox posts_box;
         private ArticleBox selected_article = null;
@@ -77,10 +77,11 @@ namespace News.UI {
             foreach(Gtk.Widget w in old_list) {
                 w.destroy ();
             }
-        
             var app = GLib.Application.get_default () as Application;
             var feeds = app.controller.get_feed_list ();
+            debug ("start update");
             foreach (Feed feed in feeds) {
+                debug ("add Feed %s", feed.title);
                 var row = new FeedRow (feed);
                 feeds_list.add (row);
                 if (feed == feeds.first ().data) {
@@ -88,10 +89,14 @@ namespace News.UI {
                 }
             }
             
-            debug ("Got Url: %s", feeds.first ().data.url);
-            var posts = app.controller.post_sorted_by_channel (feeds.first ().data.url);
-            populate_box (posts);
-
+            if (feeds.length () != 0) {
+                var posts = app.controller.post_sorted_by_channel (feeds.first ().data.url);
+                populate_box (posts);            
+            }
+        }
+        
+        public void switch_mode () {
+            print ("Switch\n");
         }
         
         private void populate_box (List<Post> posts) {

@@ -20,13 +20,101 @@
 
 namespace News.UI {
 
-    public class NewView : Gtk.ScrolledWindow, Updateable {
+    public class NewView : Gtk.ScrolledWindow, Updateable, Switchable {
+        private ModeType mode = ModeType.FLOW;
+        private Gtk.Viewport container;
+        private Gtk.FlowBox posts_box;
+        private Gtk.ListBox posts_list;
         
         public NewView () {
-            
+            Object (name: "New");
+            load_view ();
+            var app = GLib.Application.get_default () as Application;
+            app.controller.items_updated.connect (update);
+            app.controller.item_updated.connect (item_updated);
+            show_all ();
+        }
+        
+        private void load_view () {
+            container = new Gtk.Viewport (null, null);
+            add (container);
+            posts_box = new Gtk.FlowBox ();
+            posts_box.valign = Gtk.Align.START;
+            posts_box.child_activated.connect (show_article_flow);
+            container.add (posts_box);
         }
         
         public void update () {
+            var app = GLib.Application.get_default () as Application;
+            var posts = app.controller.post_sorted_by_date (true);
+            if (mode == ModeType.FLOW) {
+                var old_boxes = posts_box.get_children ();
+                foreach (Gtk.Widget w in old_boxes) {
+                    w.destroy ();
+                }
+                
+                foreach (Post post in posts) {
+                    posts_box.add (new ArticleBox (post));
+                }
+            } else {
+                var old_rowes = posts_list.get_children ();
+                foreach (Gtk.Widget w in old_rowes) {
+                    w.destroy ();
+                }
+                
+                foreach (Post post in posts) {
+                    posts_list.add (new ArticleList (post));
+                }
+            }
+            show_all ();
+        }
+        
+        public void switch_mode () {
+            if (mode == ModeType.FLOW) {
+                mode = ModeType.LIST;
+                container.remove (posts_box);
+                posts_box = null;
+                posts_list = new Gtk.ListBox ();
+                posts_list.row_activated.connect (show_article_list);
+                container.add (posts_list);
+            } else {
+                mode = ModeType.FLOW;
+                container.remove (posts_list);
+                posts_list = null;
+                posts_box = new Gtk.FlowBox ();
+                posts_box.child_activated.connect (show_article_flow);
+                container.add (posts_box);
+            }
+            update ();
+        }
+        
+         private void show_article_flow (Gtk.FlowBoxChild child) {
+            News.Post post = ((ArticleBox)child.get_child()).post;
+            show_article (post);
+        }
+        
+        private void show_article_list (Gtk.ListBoxRow row) {
+            News.Post post = ((ArticleList)row.get_child()).post;
+            show_article (post);
+        }
+        
+        private void show_article (Post post) {
+            var toplevel = get_toplevel ();
+            if (toplevel is Window) {
+                var window = toplevel as Window;
+                window.show_article (post);
+            }
+        }
+        
+                
+        private void item_updated (Post post, Controller.Updated updated) {
+            if (updated == Controller.Updated.MARK_AS_READ) {
+                // Do this a second later, so the transition is seamless and nicer
+                Timeout.add(1000, () => {
+                    update ();
+                    return false;
+                });
+            }
             
         }
     }

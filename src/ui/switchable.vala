@@ -1,5 +1,5 @@
 /*
- * image-loader.vala
+ * switchable.vala
  * This file is part of news
  *
  * Copyright (C) 2017 - Günther Wutz
@@ -18,25 +18,14 @@
  * along with news. If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace News.Background {
-    public class ImageLoader : Lumber.Worker<Gdk.Pixbuf?> {
-        private News.UI.ArticleBox widget;
+namespace News.UI {
+
+    public enum ModeType {
+        FLOW,
+        LIST
+    }
     
-        public ImageLoader (News.UI.ArticleBox widget) {
-            this.widget = widget;
-        }
-    
-        public override Gdk.Pixbuf? do_in_background () {
-            try {
-                return new Gdk.Pixbuf.from_file (widget.post.thumbnail);
-            } catch (Error e) {
-                return null;
-            }
-        }
-        
-        public override void on_post_execute (Gdk.Pixbuf? result) {
-            if (result != null)
-                widget.img.set_from_pixbuf (result);
-        }
+    public interface Switchable : Object {
+        public abstract void switch_mode ();
     }
 }

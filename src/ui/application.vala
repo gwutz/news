@@ -25,16 +25,18 @@ namespace News.UI {
         public Controller controller;
         private TrackerRss tracker_rss;
         private Tracker tracker;
-        public WidgetFactory factory;
 
         public Application () {
             Object (application_id: "org.gnome.News");
 
             controller = new Controller ();
-            factory = new WidgetFactory ();
             
             if (!FileUtils.test (CACHE, FileTest.EXISTS)) {
-                File.new_for_path (CACHE).make_directory ();
+                try {
+                    File.new_for_path (CACHE).make_directory ();
+                } catch (Error e) {
+                    warning (e.message);
+                }
             }
             var delete_channel_action = new SimpleAction("delete_channel", VariantType.INT32);
             add_action(delete_channel_action);
@@ -42,14 +44,15 @@ namespace News.UI {
             try {
                 tracker_rss = Bus.get_proxy_sync<TrackerRss>(BusType.SESSION, "org.freedesktop.Tracker1.Miner.RSS",
                                                              "/org/freedesktop/Tracker1/Miner/RSS");
-                //tracker = Bus.get_proxy_sync<Tracker>(BusType.SESSION, "org.freedesktop.Tracker1",
-                //                                      "/org/freedesktop/Tracker1/Resources");
-                //tracker.graph_updated.connect ((classname, deleted, inserted) => {
+                tracker = Bus.get_proxy_sync<Tracker>(BusType.SESSION, "org.freedesktop.Tracker1",
+                                                      "/org/freedesktop/Tracker1/Resources");
+                tracker.graph_updated.connect ((classname, deleted, inserted) => {
                     // http://www.tracker-project.org/temp/mfo#FeedMessage
-                    // print ("Graph Updated: %s\n", classname);
-                    //controller.items_updated ();
-                    //controller.feeds_updated ();
-                //});
+                    
+                    if (classname == "http://www.tracker-project.org/temp/mfo#FeedMessage") {
+                        controller.items_updated ();
+                    }
+                });
                 tracker_rss.Start ();
             } catch ( IOError e ){
                 error (e.message);
@@ -84,13 +87,7 @@ namespace News.UI {
             setup_css_theming ();
             var window = new News.UI.Window (this);
             this.add_window (window);
-            
-            var posts = controller.post_sorted_by_date(true);
-            foreach (News.Post p in posts) {
-                var img = factory.get_article_box (p);
-                window.new_article_flow.add (img);
-                window.new_article_flow.show ();
-            }
+
             window.show ();
         }
 

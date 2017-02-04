@@ -66,12 +66,15 @@ namespace News {
                     }
                 }
                 ORDER BY DESC (nie:contentCreated(?msg))");
-                    
-            var result = sparql.query (builder.str);
-
             var posts = new List<Post>();
-            while (result.next ()) {
-                posts.append(new Post(parse_cursor(result)));
+            try {                    
+                var result = sparql.query (builder.str);
+
+                while (result.next ()) {
+                    posts.append(new Post(parse_cursor(result)));
+                }
+            } catch (Error e) {
+                error (e.message);
             }
             
             return posts;
@@ -100,12 +103,15 @@ namespace News {
                   }
                 ORDER BY DESC (nie:contentCreated(?msg))
             """.printf (url);
-            
-            var result = sparql.query (query);
-            
             var posts = new List<Post>();
-            while (result.next ()) {
-                posts.append(new Post(parse_cursor(result)));
+            try {            
+                var result = sparql.query (query);
+            
+                while (result.next ()) {
+                    posts.append(new Post(parse_cursor(result)));
+                }
+            } catch (Error e) {
+                error (e.message);
             }
             
             return posts;
@@ -144,8 +150,12 @@ namespace News {
                 WHERE
                   { ?msg nie:url "%s" }
             """.printf(post.url, post.url);
-            sparql.update (query);
-            item_updated (post, Updated.MARK_AS_READ);
+            try {
+                sparql.update (query);
+                item_updated (post, Updated.MARK_AS_READ);
+            } catch (Error e) {
+                error (e.message);
+            }
         }
         
         public void mark_post_as_starred (Post post, bool starred) {
@@ -166,7 +176,11 @@ namespace News {
                              nao:hasTag nao:predefined-tag-favorite }
                     """.printf (post.url);
             }
-            sparql.update (query);
+            try {
+                sparql.update (query);
+            } catch (Error e) {
+                error (e.message);
+            }
         }
         
         public List<Feed> get_feed_list () {
@@ -179,12 +193,21 @@ namespace News {
                   }
                 ORDER BY nie:title(?chan)
                 """;
-            var result = sparql.query (query);
             var feeds = new List<Feed> ();
-            while (result.next ()) {
-                feeds.append (new Feed (result));
+            try {
+                var result = sparql.query (query);
+                
+                while (result.next ()) {
+                    feeds.append (new Feed (result));
+                }
+            } catch (DBusError derror) {
+                error ("There was an error to communicate with the dbus interface %s", derror.message);
+            } catch (IOError ioerror) {
+                error ("There was an error to communicate with the io interface %s", ioerror.message);
+            } catch (Error err) {
+                error ("A general error occurred %s", err.message);
             }
-            return feeds;
+            return feeds; 
         }
         
         public void remove_channel (string url) {
@@ -198,7 +221,11 @@ namespace News {
                         ?chan nie:url "%s"
                     }
             """.printf (url);
-            sparql.update (messages);
+            try {
+                sparql.update (messages);
+            } catch (Error e) {
+                error (e.message);
+            }
         
             string communicationChannel = """
                 DELETE
@@ -206,7 +233,11 @@ namespace News {
                 WHERE
                     { ?chan nie:url "%s" }
             """.printf (url);
-            sparql.update (communicationChannel);
+            try {
+                sparql.update (communicationChannel);
+            } catch (Error e) {
+                error (e.message);
+            }
         }
         
         private HashTable<string, Value?> parse_cursor (Sparql.Cursor cursor) {
@@ -233,11 +264,13 @@ namespace News {
                         parsed_data.insert (cursor.get_variable_name (i), new DateTime.from_timeval_local (tv));
                         break;
                     default:
-                        try {
-                            parsed_data.insert (cursor.get_variable_name(i), cursor.get_string (i)); break;
-                        } catch (Error e) {
-                            error ("This shouldn't ever happen: %s", e.message);
+                        var column = cursor.get_string (i);
+                        if (column != null) {
+                            parsed_data.insert (cursor.get_variable_name(i), cursor.get_string (i));
+                        } else {
+                            parsed_data.insert (cursor.get_variable_name(i), "");
                         }
+                        break;
                 }
             }
             
