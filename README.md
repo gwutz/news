@@ -9,8 +9,10 @@ Tracker RSS Miner etc.
 **NOTE: This project is in no direct connection to the GNOME trademark or desktop. Its an independent
 development and will never be part of GNOME. I just lend the free design for this application**
 
-![](data/screenshots/news-flow.png)
-![](data/screenshots/news-list.png)
+![](data/screenshots/start.png)
+![](data/screenshots/list.png)
 ![](data/screenshots/news-article.png)
+![](data/screenshots/feed.png)
+![](data/screenshots/search.png)
 
 Stay tuned!
