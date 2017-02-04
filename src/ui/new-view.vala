@@ -21,10 +21,10 @@
 namespace News.UI {
 
     public class NewView : Gtk.ScrolledWindow, Updateable, Switchable {
-        private ModeType mode = ModeType.FLOW;
+        protected ModeType mode = ModeType.FLOW;
         private Gtk.Viewport container;
-        private Gtk.FlowBox posts_box;
-        private Gtk.ListBox posts_list;
+        protected Gtk.FlowBox posts_box;
+        protected Gtk.ListBox posts_list;
         
         public NewView () {
             Object (name: "New");
@@ -35,7 +35,7 @@ namespace News.UI {
             show_all ();
         }
         
-        private void load_view () {
+        protected void load_view () {
             container = new Gtk.Viewport (null, null);
             add (container);
             posts_box = new Gtk.FlowBox ();
@@ -44,7 +44,7 @@ namespace News.UI {
             container.add (posts_box);
         }
         
-        public void update () {
+        public virtual void update () {
             var app = GLib.Application.get_default () as Application;
             var posts = app.controller.post_sorted_by_date (true);
             if (mode == ModeType.FLOW) {
@@ -107,7 +107,7 @@ namespace News.UI {
         }
         
                 
-        private void item_updated (Post post, Controller.Updated updated) {
+        protected void item_updated (Post post, Controller.Updated updated) {
             if (updated == Controller.Updated.MARK_AS_READ) {
                 // Do this a second later, so the transition is seamless and nicer
                 Timeout.add(1000, () => {

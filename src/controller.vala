@@ -41,7 +41,7 @@ namespace News {
             }
         }
         
-        public List<Post> post_sorted_by_date (bool unread = false) {
+        public List<Post> post_sorted_by_date (bool unread = false, bool starred = false) {
             StringBuilder builder = new StringBuilder ("
                 SELECT 
                     nie:title(?msg) AS title
@@ -59,10 +59,16 @@ namespace News {
                 builder.append ("; nmo:isRead false");
             }
             
+            if (starred) {
+                builder.append ("; nao:hasTag nao:predefined-tag-favorite ");
+            }
+            
             builder.append (". OPTIONAL {
                         ?msg nco:creator ?creator .
                         ?msg nao:hasTag ?tag .
-                        FILTER(?tag = nao:predefined-tag-favorite)
+                        FILTER(?tag = nao:predefined-tag-favorite) .
+                        OPTIONAL {?creator nco:hasEmailAddress ?email } .
+                        OPTIONAL {?creator nco:websiteUrl ?website }
                     }
                 }
                 ORDER BY DESC (nie:contentCreated(?msg))");
@@ -71,6 +77,7 @@ namespace News {
                 var result = sparql.query (builder.str);
 
                 while (result.next ()) {
+                    debug ("Next result");
                     posts.append(new Post(parse_cursor(result)));
                 }
             } catch (Error e) {
@@ -159,6 +166,7 @@ namespace News {
         }
         
         public void mark_post_as_starred (Post post, bool starred) {
+            debug ("Star article %s with url %s", post.title, post.url);
             string query;
             if (starred) {
                 query = """

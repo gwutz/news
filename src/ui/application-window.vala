@@ -23,8 +23,6 @@ namespace News.UI {
     [GtkTemplate (ui = "/org/gnome/News/ui/window.ui")]
     public class Window : Gtk.ApplicationWindow {
     
-        public Gtk.FlowBox new_article_flow;
-        public Gtk.ListBox new_article_list;
         private ArticleView article;
         
         private bool is_flow = true;
@@ -73,6 +71,9 @@ namespace News.UI {
             
             var feed_view = new News.UI.FeedView ();
             stack.add_titled (feed_view, feed_view.name, feed_view.name);
+            
+            var star_view = new News.UI.StarView ();
+            stack.add_titled (star_view, star_view.name, star_view.name);
             
             stack.notify["visible-child"].connect (view_changed);
             view_changed ();
@@ -142,14 +143,12 @@ namespace News.UI {
             
             var app = get_application () as Application;
             if (article.post.starred) {
-                app.controller.mark_post_as_starred (article.post, false);
-                article.post.starred = false;
                 this.star_btn.set_image (new Gtk.Image.from_icon_name ("non-starred-symbolic", Gtk.IconSize.MENU));
             } else {
-                app.controller.mark_post_as_starred (article.post, true);
-                article.post.starred = true;
                 this.star_btn.set_image (new Gtk.Image.from_icon_name ("starred-symbolic", Gtk.IconSize.MENU));
             }
+            app.controller.mark_post_as_starred (article.post, !article.post.starred);
+            article.post.starred = !article.post.starred;
         }
         
         [GtkCallback]
