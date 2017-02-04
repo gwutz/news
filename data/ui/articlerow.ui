@@ -23,6 +23,9 @@
             <property name="halign">start</property>
             <property name="label" translatable="yes">West Coast Summit</property>
             <property name="ellipsize">end</property>
+            <style>
+              <class name="article-title"/>
+            </style>
           </object>
           <packing>
             <property name="expand">False</property>

@@ -22,8 +22,6 @@ namespace News.UI {
 
     [GtkTemplate (ui = "/org/gnome/News/ui/window.ui")]
     public class Window : Gtk.ApplicationWindow {
-    
-        private ArticleView article;
         
         private bool is_flow = true;
 
@@ -153,12 +151,8 @@ namespace News.UI {
         
         [GtkCallback]
         private void star_article (Gtk.Button btn) {
-            if (article == null) {
-                debug ("ArticleView destroyed - this shouldn't happen");
-                return;
-            }
-            
             var app = get_application () as Application;
+            var article = stack.get_child_by_name ("Article") as ArticleView;
             if (article.post.starred) {
                 this.star_btn.set_image (new Gtk.Image.from_icon_name ("non-starred-symbolic", Gtk.IconSize.MENU));
             } else {

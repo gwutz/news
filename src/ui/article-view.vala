@@ -28,6 +28,7 @@ namespace News.UI {
             }
             set {
                 _post = value;
+                debug ("Author: %s", _post.author);
                 var author = _post.author != null? _post.author : "";
                 var html = """
                 <style>
@@ -164,12 +165,14 @@ namespace News.UI {
                   <span>%s</span>
                   <p>%s</p>
                   <div id="footer">
+                  <p><a href="%s">%s</a></p>
+                  <p><a href="mailto:%s?Subject=%s">%s</a></p>
                   <p><a href="%s">View post</a></p>
                   </div>
                   </article>
                 </body>
-            """.printf (post.title, author, post.content, post.url);
-            
+            """.printf (post.title, author, post.content, post.author_homepage, post.author_homepage, post.author_email, post.title, post.author_email, post.url);
+            debug ("Author Homepage: %s", post.author_homepage);
             load_html(html, null);
             }
         }

@@ -52,6 +52,7 @@ namespace News {
                     ?msg BOUND(?tag) as is_starred
                     nie:contentCreated(?msg) AS date
                     nie:url(?website) AS ?author_homepage
+                    nco:emailAddress(?email) AS author_email
                 WHERE
                 {
                     ?msg a mfo:FeedMessage");
@@ -77,8 +78,9 @@ namespace News {
                  . OPTIONAL { ?msg nao:hasTag ?tag .
                                 FILTER(?tag = nao:predefined-tag-favorite)}
                  . OPTIONAL {
-                    ?msg nco:creator ?creator .
-                    OPTIONAL { ?creator nco:websiteUrl ?website }
+                    ?msg nco:creator ?creator
+                    . OPTIONAL { ?creator nco:websiteUrl ?website }
+                    . OPTIONAL { ?creator nco:hasEmailAddress ?email }
                 }
             
             } ORDER BY DESC (nie:contentCreated(?msg))");
@@ -112,11 +114,13 @@ namespace News {
                   { ?msg a mfo:FeedMessage;
                          nmo:communicationChannel ?chan .
                     ?chan nie:url "%s" .
-                    OPTIONAL { ?msg nco:creator ?creator .
-                               ?msg nao:hasTag ?tag .
-                               FILTER(?tag = nao:predefined-tag-favorite) .
-                               OPTIONAL { ?creator nco:hasEmailAddress ?email } .
-                               OPTIONAL { ?creator nco:websiteUrl ?website }}
+                    OPTIONAL { ?msg nao:hasTag ?tag .
+                               FILTER(?tag = nao:predefined-tag-favorite) } .
+                    OPTIONAL { ?msg nco:creator ?creator 
+                        . OPTIONAL { ?creator nco:websiteUrl ?website }
+                        . OPTIONAL { ?creator nco:hasEmailAddress ?email }
+                    }
+                    
                   }
                 ORDER BY DESC (nie:contentCreated(?msg))
             """.printf (url);

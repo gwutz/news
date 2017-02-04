@@ -29,6 +29,8 @@ namespace News {
         public string content { get; set; }
         public string url { get; set; }
         public string author { get; set; }
+        public string author_homepage { get; set; }
+        public string author_email { get; set; }
         public DateTime date { get; set; }
         public string thumbnail { get; set; }
         public bool starred { get; set; }
@@ -40,10 +42,13 @@ namespace News {
             this.content = (string)data.get ("content");
             this.url = (string)data.get ("url");
             this.author = (string)data.get ("fullname");
+            this.author_homepage = (string)data.get ("author_homepage");
+            this.author_email = (string)data.get ("author_email");
             this.date = (DateTime)data.get ("date");
             this.read = (bool)data.get ("is_read");
             this.starred = (bool)data.get ("is_starred");
             
+            debug ("Author: %s", this.author);
             this.thumbnail = News.UI.Application.CACHE + compute_hash () + ".png";
             if (!FileUtils.test (this.thumbnail, FileTest.EXISTS)) {
                 Idle.add (() => {
