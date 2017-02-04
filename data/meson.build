@@ -1,6 +1,8 @@
 gnome = import ('gnome')
 
-gnome_news_resources = gnome.compile_resources ('gnome_news_resource', 'gnome-news-resource.xml', source_dir: '.', c_name: 'gnome_news')
+news_resources = gnome.compile_resources ('news_resource', 'news-resource.xml', source_dir: '.', c_name: 'news')
 
 install_data('org.gnome.News.desktop',
     install_dir : join_paths('share', 'applications'))
+
+subdir('icons')

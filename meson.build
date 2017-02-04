@@ -1,4 +1,4 @@
-project ('gnome-news', ['vala', 'c'])
+project ('news', ['vala', 'c'])
 
 glib = dependency ('glib-2.0')
 gobject = dependency ('gobject-2.0')

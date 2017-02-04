@@ -1,8 +1,9 @@
 [Desktop Entry]
 Name=News
-Exec=gnome-news
-Icon=gnome-news
+Exec=news
+Icon=news
 Terminal=false
 Type=Application
+StartupNotify=true
 Categories=Network;Feed;News;GNOME;GTK;
 Keywords=News;Feed;

@@ -40,6 +40,9 @@ namespace News.UI {
             add (container);
             posts_box = new Gtk.FlowBox ();
             posts_box.valign = Gtk.Align.START;
+            posts_box.margin = 15;
+            posts_box.column_spacing = 20;
+            posts_box.row_spacing = 30;
             posts_box.homogeneous = true;
             posts_box.child_activated.connect (show_article_flow);
             container.add (posts_box);
@@ -84,6 +87,9 @@ namespace News.UI {
                 posts_list = null;
                 posts_box = new Gtk.FlowBox ();
                 posts_box.valign = Gtk.Align.START;
+                posts_box.margin = 15;
+                posts_box.column_spacing = 20;
+                posts_box.row_spacing = 30;
                 posts_box.homogeneous = true;
                 posts_box.child_activated.connect (show_article_flow);
                 container.add (posts_box);

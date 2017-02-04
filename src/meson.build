@@ -1,5 +1,5 @@
 
-gnome_news_sources = [
+news_sources = [
     'main.vala',
     'controller.vala',
     'tracker.vala',
@@ -19,12 +19,12 @@ gnome_news_sources = [
     'worker/company.vala',
     'worker/worker.vala',
     'worker/image-loader.vala',
-    gnome_news_resources
+    news_resources
 ]
 
-executable ('gnome-news',
-            gnome_news_sources,
+executable ('news',
+            news_sources,
             dependencies: [glib, gobject, gio, gtk, sparql, webkit],
-            vala_args:['--target-glib=2.38', '--gresources=' + meson.source_root () + '/data/gnome-news-resource.xml'],
+            vala_args:['--target-glib=2.38', '--gresources=' + meson.source_root () + '/data/news-resource.xml'],
             install: true
             )
