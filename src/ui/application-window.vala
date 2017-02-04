@@ -57,6 +57,9 @@ namespace News.UI {
         [GtkChild (name = "SearchBar")]
         private Gtk.SearchBar search_bar;
         
+        [GtkChild (name = "SearchEntry")]
+        private Gtk.SearchEntry search_entry;
+        
         private Gtk.Widget previous_view = null;
 
         public Window (Application app) {
@@ -75,6 +78,13 @@ namespace News.UI {
             var star_view = new News.UI.StarView ();
             stack.add_titled (star_view, star_view.name, star_view.name);
             
+            var search_view = new News.UI.SearchView ();
+            search_entry.bind_property ("text", search_view, "search_query");
+            stack.add_named (search_view, search_view.name);
+            
+            var article_view = new News.UI.ArticleView ();
+            stack.add_named (article_view, article_view.name);
+            
             stack.notify["visible-child"].connect (view_changed);
             view_changed ();
         }
@@ -88,11 +98,13 @@ namespace News.UI {
         }
         
         internal void show_article (News.Post post) {
-            article = new ArticleView ();
+            //article = new ArticleView ();
+            search_bar.set_search_mode (false);
+            var article = stack.get_child_by_name ("Article") as ArticleView;
             article.post =  post;
             article.show_all ();
             this.previous_view = this.stack.get_visible_child ();
-            this.stack.add_named (article, "feedview");
+            //this.stack.add_named (article, "feedview");
             this.stack.set_visible_child (article);
             this.stack.show_all ();
             set_headerbar_article (post);
@@ -101,11 +113,9 @@ namespace News.UI {
         }
         
         private void return_article (Gtk.Button btn) {
-            
+            this.search_entry.text = "";
             this.stack.set_visible_child (this.previous_view);
             this.previous_view = null;
-            this.stack.remove (this.article);
-            this.article = null;
             set_headerbar_main ();
         }
         
@@ -122,6 +132,13 @@ namespace News.UI {
             } else {
                 this.star_btn.set_image (new Gtk.Image.from_icon_name ("non-starred-symbolic", Gtk.IconSize.MENU));
             }
+        }
+        
+        private void set_headerbar_search () {
+            this.add_feed_btn.hide ();
+            this.switcher.hide ();
+            this.view_mode.hide ();
+            this.back_btn.show ();
         }
         
         private void set_headerbar_main () {
@@ -188,6 +205,17 @@ namespace News.UI {
                 new_url_btn.set_sensitive (false);
             } else {
                 new_url_btn.set_sensitive (true);
+            }
+        }
+        
+        [GtkCallback]
+        private void on_search_changed () {
+            if (search_entry.text_length > 0) {
+                if (stack.get_visible_child_name () != "Search") {
+                    previous_view = stack.get_visible_child ();
+                    set_headerbar_search ();
+                    stack.set_visible_child_name ("Search");
+                }
             }
         }
     }

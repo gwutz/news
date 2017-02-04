@@ -1,5 +1,5 @@
 /*
- * star-view.vala
+ * search-view.vala
  * This file is part of news
  *
  * Copyright (C) 2017 - Günther Wutz
@@ -20,20 +20,29 @@
 
 namespace News.UI {
 
-    public class StarView : NewView {
-    
-        public StarView () {
-            Object (name: "Starred");
+    public class SearchView : NewView {
+        private string _search_query;
+
+        public string search_query {
+            get {
+                return _search_query;
+            }
+            set {
+                _search_query = value;
+                update ();
+            }
+        }
+
+        public SearchView () {
+            Object (name: "Search");
             load_view ();
-            var app = GLib.Application.get_default () as Application;
-            app.controller.items_updated.connect (update);
-            app.controller.item_updated.connect (item_updated);
             show_all ();
         }
-    
+
         public override void update () {
+            if (_search_query.length == 0) return;
             var app = GLib.Application.get_default () as Application;
-            var posts = app.controller.post_sorted_by_date (false, true);
+            var posts = app.controller.post_by_search (_search_query);
             foreach (Post p in posts) {
                 debug ("Title: %s", p.title);
                 debug ("Is starred: %s", p.starred?"yes":"no");

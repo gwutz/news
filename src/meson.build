@@ -13,6 +13,7 @@ gnome_news_sources = [
     'ui/new-view.vala',
     'ui/feed-view.vala',
     'ui/star-view.vala',
+    'ui/search-view.vala',
     'ui/updateable.vala',
     'ui/switchable.vala',
     'worker/company.vala',

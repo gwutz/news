@@ -175,6 +175,7 @@ namespace News.UI {
         }
         
         public ArticleView () {
+            Object (name: "Article");
             decide_policy.connect (on_policy);
         }
         

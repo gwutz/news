@@ -137,27 +137,26 @@ namespace News {
         public List<Post> post_by_search (string text) {
             string query = """
                 SELECT
-                  nie:url(?msg) AS ?url
-                  nie:title(?msg) AS ?title
-                  nco:fullname(?creator) AS ?fullname
-                  nie:url(?website) AS ?author_homepage
-                  nco:emailAddress(?email) AS ?author_email
-                  nie:contentCreated(?msg) AS ?date_created
-                  nmo:htmlMessageContent(?msg) AS ?content
-                  nmo:isRead(?msg) AS ?is_read
-                  ?msg BOUND(?tag) as ?is_starred
+                  nie:url(?msg) AS url
+                  nie:title(?msg) AS title
+                  nco:fullname(?creator) AS fullname
+                  nie:url(?website) AS author_homepage
+                  nie:contentCreated(?msg) AS date
+                  nmo:htmlMessageContent(?msg) AS content
+                  nmo:isRead(?msg) AS is_read
+                  ?msg BOUND(?tag) as is_starred
                   { ?msg a mfo:FeedMessage;
                     fts:match "%s" .
+                    OPTIONAL { ?msg nao:hasTag ?tag .
+                                FILTER(?tag = nao:predefined-tag-favorite) } .
                     OPTIONAL { ?msg nco:creator ?creator .
-                       ?msg nao:hasTag ?tag .
-                       FILTER(?tag = nao:predefined-tag-favorite) .
                        OPTIONAL { ?creator nco:hasEmailAddress ?email } .
                        OPTIONAL { ?creator nco:websiteUrl ?website }
                     }
                   }
                 ORDER BY fts:rank(?msg)""".printf (text);
-            query = Sparql.escape_string (query);
             var posts = new List<Post>();
+            debug ("%s", query);
             try {
                 var result = sparql.query (query);
                 while (result.next ()) {
