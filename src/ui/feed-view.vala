@@ -52,13 +52,11 @@ namespace News.UI {
             posts_scroll.add (posts_box);
             add2 (posts_scroll);
             
-            // add action
-//            app = Gio.Application.get_default()
-//        delete_channel_action = app.lookup_action('delete_channel')
-//        delete_channel_action.connect('activate', self.delete_channel)
             var app = GLib.Application.get_default ();
             var delete_action = app.lookup_action("delete_channel") as SimpleAction;
             delete_action.activate.connect (delete_channel);
+            var mark_all_as_read_action = app.lookup_action("mark_all_as_read") as SimpleAction;
+            mark_all_as_read_action.activate.connect (mark_all_as_read);
         }
         
         public void update () {
@@ -128,6 +126,7 @@ namespace News.UI {
                 int index = selected_row.get_index ();
                 var menu = new Menu ();
                 menu.append ("Remove Channel", "app.delete_channel(%d)".printf (index));
+                menu.append ("Mark all as read", "app.mark_all_as_read(%d)".printf (index));
                 var popover = new Gtk.Popover.from_model (selected_row, menu);
                 popover.set_position (Gtk.PositionType.BOTTOM);
                 popover.show ();
@@ -154,7 +153,19 @@ namespace News.UI {
                 var app = GLib.Application.get_default () as Application;
                 app.controller.remove_channel (row.feed.url);
             }
-            
+        }
+        
+        private void mark_all_as_read (Variant? parameter) {
+            var outer = posts_box.get_children ();
+            var app = GLib.Application.get_default () as Application;
+            foreach (Gtk.Widget child in outer) {
+                var flowchild = child as Gtk.FlowBoxChild;
+                var box = flowchild.get_child () as ArticleBox;
+                
+                if (box != null) {
+                    app.controller.mark_post_as_read (box.post);
+                }
+            }
         }
     }
     

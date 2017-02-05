@@ -28,7 +28,7 @@ namespace Lumber {
         Company () {
             try {
                 thread_pool = new ThreadPool<void *>.with_owned_data(
-                    on_work_ready, 1, false
+                    on_work_ready, 2, false
                 );
             } catch (ThreadError e) {
                 error(e.message);

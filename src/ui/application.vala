@@ -40,6 +40,8 @@ namespace News.UI {
             }
             var delete_channel_action = new SimpleAction("delete_channel", VariantType.INT32);
             add_action(delete_channel_action);
+            var mark_all_as_read_action = new SimpleAction("mark_all_as_read", VariantType.INT32);
+            add_action(mark_all_as_read_action);
             
             try {
                 tracker_rss = Bus.get_proxy_sync<TrackerRss>(BusType.SESSION, "org.freedesktop.Tracker1.Miner.RSS",
@@ -57,6 +59,17 @@ namespace News.UI {
             } catch ( IOError e ){
                 error (e.message);
             }
+        }
+
+        public string load_from_resource (string uri) throws IOError, Error {
+            var stream = resources_open_stream (uri, ResourceLookupFlags.NONE);
+            var dis = new DataInputStream(stream);
+            StringBuilder builder = new StringBuilder ();
+            string line;
+            while ( (line = dis.read_line (null)) != null ) {
+                builder.append (line);
+            }
+            return builder.str.dup ();
         }
         
         private void setup_css_theming () {
