@@ -37,10 +37,17 @@ namespace News.UI {
         
         public ArticleList (Post p) {
             this.get_style_context ().add_class ("feeds-list");
-            this.post = p;
-            this.title.set_text(p.title);
-            this.author.set_text(p.author);
-            var date_str = p.date.format ("%d. %B");
+            set_post_data (p);
+
+            this.show_all ();
+        }
+
+        public void set_post_data (Post post) {
+            this.post = post;
+
+            this.title.set_text(post.title);
+            this.author.set_text(post.author);
+            var date_str = post.date.format ("%d. %B");
             var now = new DateTime.now_local ();
             var diff = now.difference (this.post.date)/TimeSpan.DAY;
             
@@ -52,7 +59,6 @@ namespace News.UI {
             if (post.starred) {
                 starred.image = new Gtk.Image.from_icon_name ("starred-symbolic", Gtk.IconSize.MENU);
             }
-            this.show_all ();
         }
         
         [GtkCallback]

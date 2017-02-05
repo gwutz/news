@@ -25,9 +25,9 @@ namespace News {
         public string title { get; set; }
         public string url { get; set; }
         
-        public Feed (Sparql.Cursor cursor) {
-            title = cursor.get_string (1);
-            url = cursor.get_string (0);
+        public Feed (HashTable<string, Value?> data) {
+            title = (string) data.get ("title");
+            url = (string) data.get ("url");
         }
     }
 }

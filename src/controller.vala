@@ -254,7 +254,7 @@ namespace News {
                 var result = sparql.query (query);
                 
                 while (result.next ()) {
-                    feeds.append (new Feed (result));
+                    feeds.append (new Feed (parse_cursor (result)));
                 }
             } catch (DBusError derror) {
                 error ("There was an error to communicate with the dbus interface %s", derror.message);

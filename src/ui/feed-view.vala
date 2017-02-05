@@ -20,9 +20,12 @@
 
 namespace News.UI {
     public class FeedView : Gtk.Paned, Updateable, Switchable {
+        private ModeType mode = ModeType.FLOW;
+        private Gtk.ScrolledWindow posts_scroll;
         private Gtk.ListBox feeds_list;
         private Gtk.FlowBox posts_box;
-        private ArticleBox selected_article = null;
+        private Gtk.ListBox posts_list;
+        private Gtk.Widget selected_article = null;
         private bool should_update = true;
         
         public FeedView () {
@@ -43,14 +46,17 @@ namespace News.UI {
             add1 (feeds_scroll);
             
             // right pane side
-            var posts_scroll = new Gtk.ScrolledWindow (null, null);
+            posts_scroll = new Gtk.ScrolledWindow (null, null);
             posts_box        = new Gtk.FlowBox ();
             posts_box.set_min_children_per_line (2);
             posts_scroll.vexpand = false;
             posts_box.valign = Gtk.Align.START;
-            posts_box.child_activated.connect (show_article);
+            posts_box.child_activated.connect (show_article_box);
             posts_scroll.add (posts_box);
             add2 (posts_scroll);
+
+            posts_list = new Gtk.ListBox ();
+            posts_list.row_activated.connect (show_article_list);
             
             var app = GLib.Application.get_default ();
             var delete_action = app.lookup_action("delete_channel") as SimpleAction;
@@ -64,10 +70,18 @@ namespace News.UI {
             if (!should_update && selected_article != null) {
                 debug ("update only child");
                 should_update = true;
-                var post = selected_article.post;
-                post.read = true;
-                selected_article.set_post_data(post);
-                posts_box.unselect_child (posts_box.get_selected_children ().first ().data);
+                News.Post post;
+                if (mode == ModeType.FLOW) {
+                    post = (selected_article as ArticleBox).post;
+                    post.read = true;
+                    (selected_article as ArticleBox).set_post_data (post);
+                    posts_box.unselect_child (posts_box.get_selected_children ().first ().data);
+                } else {
+                    post = (selected_article as ArticleList).post;
+                    post.read = true;
+                    (selected_article as ArticleList).set_post_data (post);
+                    posts_list.unselect_row(posts_list.get_selected_row());
+                }
                 selected_article = null;
                 return;
             }
@@ -89,22 +103,46 @@ namespace News.UI {
             
             if (feeds.length () != 0) {
                 var posts = app.controller.post_sorted_by_channel (feeds.first ().data.url);
-                populate_box (posts);            
+                populate_posts (posts);            
             }
+            show_all ();
         }
         
         public void switch_mode () {
-            
+            if (mode == ModeType.FLOW) {
+                mode = ModeType.LIST;
+                posts_scroll.remove (posts_box);
+                posts_box.@foreach ((w) => { w.destroy (); });
+                posts_scroll.add (posts_list);
+            } else {
+                mode = ModeType.FLOW;
+                posts_scroll.remove (posts_list);
+                posts_list.@foreach ((w) => { w.destroy (); });
+                posts_scroll.add (posts_box);
+            }
+
+            update ();
         }
         
-        private void populate_box (List<Post> posts) {
-            var old_boxes = posts_box.get_children ();
-            foreach (Gtk.Widget w in old_boxes) {
-                w.destroy ();
-            }
-            
-            foreach (Post post in posts) {
-                posts_box.add (new ArticleBox (post));
+        private void populate_posts (List<Post> posts) {
+            if (mode == ModeType.FLOW) {
+                var old_boxes = posts_box.get_children ();
+                foreach (Gtk.Widget w in old_boxes) {
+                    w.destroy ();
+                }
+                
+                foreach (Post post in posts) {
+                    posts_box.add (new ArticleBox (post));
+                }
+            } else {
+                var old_rows = posts_list.get_children ();
+                foreach (Gtk.Widget w in old_rows) {
+                    w.destroy ();
+                }
+                
+                foreach (Post post in posts) {
+                    posts_list.add (new ArticleList (post));
+                }
             }
         }
         
@@ -113,7 +151,7 @@ namespace News.UI {
             var app = GLib.Application.get_default () as Application;
             
             var posts = app.controller.post_sorted_by_channel (feedrow.feed.url);
-            populate_box (posts);
+            populate_posts (posts);
         }
         
         private bool list_box_button_release (Gdk.EventButton event) {
@@ -133,15 +171,28 @@ namespace News.UI {
             }
             return Gdk.EVENT_STOP;
         }
-        
-        private void show_article (Gtk.FlowBoxChild child) {
+
+        private void show_article_list (Gtk.ListBoxRow row) {
+            selected_article = row.get_child () as ArticleList;
+            show_article ();
+        }
+
+        private void show_article_box (Gtk.FlowBoxChild child) {
             selected_article = child.get_child () as ArticleBox;
+            show_article ();
+        }
+        
+        private void show_article () {
             should_update = false;
         
-            var toplevel = child.get_toplevel ();
+            var toplevel = get_toplevel ();
             if (toplevel is Window) {
                 var window = toplevel as Window;
-                News.Post post = selected_article.post;
+                News.Post post;
+                if (mode == ModeType.FLOW)
+                    post = (selected_article as ArticleBox).post;
+                else
+                    post = (selected_article as ArticleList).post;
                 window.show_article (post);
             }
         }
