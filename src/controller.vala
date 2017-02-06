@@ -27,8 +27,7 @@ namespace News {
         }
     
         public signal void items_updated ();
-        public signal void feeds_updated ();
-        
+
         public signal void item_updated (Post post, Updated updated);
     
         private Sparql.Connection sparql;
@@ -65,15 +64,6 @@ namespace News {
                 builder.append ("; nao:hasTag nao:predefined-tag-favorite ");
             }
             
-            /*builder.append (". OPTIONAL {
-                        ?msg nco:creator ?creator .
-                        ?msg nao:hasTag ?tag .
-                        FILTER(?tag = nao:predefined-tag-favorite) .
-                        OPTIONAL {?creator nco:hasEmailAddress ?email } .
-                        OPTIONAL {?creator nco:websiteUrl ?website }
-                    }
-                }
-                ORDER BY DESC (nie:contentCreated(?msg))");*/
             builder.append("
                  . OPTIONAL { ?msg nao:hasTag ?tag .
                                 FILTER(?tag = nao:predefined-tag-favorite)}
@@ -82,7 +72,7 @@ namespace News {
                     . OPTIONAL { ?creator nco:websiteUrl ?website }
                     . OPTIONAL { ?creator nco:hasEmailAddress ?email }
                 }
-            
+
             } ORDER BY DESC (nie:contentCreated(?msg))");
             var posts = new List<Post>();
             debug ("Query: %s", builder.str);

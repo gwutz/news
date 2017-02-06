@@ -35,6 +35,9 @@ namespace News.UI {
         }
         
         private void load_view () {
+            var app = GLib.Application.get_default () as Application;
+            app.controller.items_updated.connect (update);
+
             // left pane side
             var feeds_scroll = new Gtk.ScrolledWindow (null, null);
             feeds_scroll.width_request = 200;
@@ -58,7 +61,6 @@ namespace News.UI {
             posts_list = new Gtk.ListBox ();
             posts_list.row_activated.connect (show_article_list);
             
-            var app = GLib.Application.get_default ();
             var delete_action = app.lookup_action("delete_channel") as SimpleAction;
             delete_action.activate.connect (delete_channel);
             var mark_all_as_read_action = app.lookup_action("mark_all_as_read") as SimpleAction;
