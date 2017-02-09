@@ -98,6 +98,7 @@ namespace News {
                                                          ctx.set_source_surface (surface, 0, 0);
                                                          ctx.paint ();
                                                          new_surface.write_to_png (thumbnail);
+                                                         thumb_exists = true;
                                                          thumb_ready ();
                                                      } catch ( Error e ){
                                                          error (e.message);

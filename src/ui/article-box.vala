@@ -45,6 +45,7 @@ namespace News.UI {
         
         // FIXME: Use properties for setting!
         public void set_post_data (Post post) {
+            this.post = post;
             if (!post.thumb_exists) {
                 spinner.start ();
                 post.thumb_ready.connect (show_image);
@@ -53,7 +54,7 @@ namespace News.UI {
                 Lumber.Company.get_instance ().enqueue (new News.Background.ImageLoader(this));
                 //img.set_from_file (post.thumbnail);
             }
-            this.post = post;
+
             if (post.read) {
                 img.set_opacity (0.5);
             }

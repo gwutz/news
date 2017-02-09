@@ -28,8 +28,9 @@ namespace News.Background {
     
         public override Gdk.Pixbuf? do_in_background () {
             try {
-                return new Gdk.Pixbuf.from_file (widget.post.thumbnail);
+	        return new Gdk.Pixbuf.from_file (widget.post.thumbnail);
             } catch (Error e) {
+            	error (e.message);
                 return null;
             }
         }
